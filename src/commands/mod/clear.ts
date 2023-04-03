@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChatInputCommandInteraction, TextChannel } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,7 +7,8 @@ module.exports = {
     .setDescription("Deletes a specified amount of messages")
     .addIntegerOption((option) => {
       return option.setName("amount").setDescription("The amount of messages to delete.").setRequired(true).setMinValue(1).setMaxValue(100);
-    }),
+    })
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   async execute(interaction: ChatInputCommandInteraction) {
     if (!interaction.memberPermissions?.has("ManageMessages")) return interaction.reply({ content: "You do not have permissions to manage messages.", ephemeral: true });
     if (!interaction.guild?.members.me?.permissions.has("ManageMessages")) return interaction.reply({ content: "I do not have permissions to manage messages.", ephemeral: true });
