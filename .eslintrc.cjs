@@ -16,6 +16,7 @@ const config = {
   },
   plugins: ["@typescript-eslint"],
   root: true,
+  exclude: ["dist"],
 };
 
 module.exports = config;
