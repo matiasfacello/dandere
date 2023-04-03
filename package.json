@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/Bot.js",
-    "dev": "nodemon -e ts --exec \"npm run build && npm start\""
+    "dev": "nodemon -e ts --exec \"npm run build && npm start\"",
+    "commands": "tsc && node dist/scripts/DeleteCommands.js && node dist/scripts/DeployCommands.js"
   },
   "author": "matiasfacello",
   "license": "MIT",
