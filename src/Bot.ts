@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import { printDev } from "./helpers/functions";
 config();
 
 import { Client, GatewayIntentBits, Guild, TextChannel } from "discord.js";
@@ -8,7 +9,7 @@ const bot = new Client({ intents: [GatewayIntentBits.GuildVoiceStates, GatewayIn
 bot.login(process.env.BOT_TOKEN);
 
 bot.on("ready", () => {
-  console.log(`Logged in as ${bot.user?.tag}!`);
+  console.log(`${bot.user?.tag} is ready!`);
 });
 
 bot.on("voiceStateUpdate", async (oldState, newState) => {
@@ -17,14 +18,14 @@ bot.on("voiceStateUpdate", async (oldState, newState) => {
   if (newState.channelId === null && oldState.channelId && channelToWrite) {
     const msg = `<@${oldState.member?.user.id}> left to <#${oldState.channelId}>`;
     channelToWrite.send(msg);
-    console.log(msg);
+    printDev(msg);
   } else if (oldState.channelId === null && newState.channelId) {
     const msg = `<@${newState.member?.user.id}> connected to <#${newState.channelId}>`;
     channelToWrite.send(msg);
-    console.log(msg);
+    printDev(msg);
   } else if (newState.channelId && oldState.channelId) {
     const msg = `<@${newState.member?.user.id}> moved from <#${oldState.channelId}> to <#${newState.channelId}>`;
     channelToWrite.send(msg);
-    console.log(msg);
+    printDev(msg);
   }
 });
