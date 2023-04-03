@@ -2,7 +2,7 @@
   "name": "dandere",
   "version": "0.0.1",
   "description": "Discord bot to track things",
-  "main": "index.js",
+  "main": "src/Bot.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/Bot.js",
@@ -12,6 +12,7 @@
   "author": "matiasfacello",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/builders": "^1.6.1",
     "discord.js": "^14.9.0"
   },
   "devDependencies": {
