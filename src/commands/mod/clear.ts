@@ -9,8 +9,8 @@ module.exports = {
       return option.setName("amount").setDescription("The amount of messages to delete.").setRequired(true).setMinValue(1).setMaxValue(100);
     }),
   async execute(interaction: ChatInputCommandInteraction) {
-    if (!interaction.memberPermissions?.has("ManageMessages")) return interaction.reply({ content: "You do not have permissions to use this command.", ephemeral: true });
-    if (!interaction.guild?.members.me?.permissions.has("ManageMessages")) return interaction.reply({ content: "I do not have permissions to use this command.", ephemeral: true });
+    if (!interaction.memberPermissions?.has("ManageMessages")) return interaction.reply({ content: "You do not have permissions to manage messages.", ephemeral: true });
+    if (!interaction.guild?.members.me?.permissions.has("ManageMessages")) return interaction.reply({ content: "I do not have permissions to manage messages.", ephemeral: true });
 
     const amount = interaction.options.getInteger("amount");
 
