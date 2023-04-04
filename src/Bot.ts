@@ -1,4 +1,4 @@
-import { commandsCreate, commandsEvent, trackVoice } from "./events/index";
+import { commandsCreate, commandsEvent, guildCreate, guildDelete, trackVoice } from "./events/index";
 
 import { config } from "dotenv";
 config();
@@ -16,7 +16,9 @@ bot.on("ready", () => {
 });
 
 commandsCreate(bot);
-
 commandsEvent(bot);
+
+guildCreate(bot);
+guildDelete(bot);
 
 trackVoice(bot);
