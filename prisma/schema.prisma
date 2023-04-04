@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model VoiceTrack {
+  guildId       String   @unique(sort: Asc)
+  enabled       Boolean  @default(false)
+  allChannels   Boolean?
+  trackChannels String?
+  logChannel    String?
+  createdAt     DateTime @default(now())
+
+  @@index([guildId], type: Hash)
+}
