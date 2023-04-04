@@ -23,7 +23,7 @@ module.exports = {
       }
     } catch (err) {
       console.log("/trackvoicedisable err: ", err);
-      interaction.reply({ content: `There was an error using this function.`, ephemeral: true });
+      interaction.editReply("There was an error using this function.");
     }
   },
 };
