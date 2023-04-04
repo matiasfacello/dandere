@@ -6,7 +6,7 @@ config();
  * @param toLog
  * @returns console.log
  */
-export const printDev = (toLog: string) => {
+export const printDev = (toLog: any) => {
   if (process.env.NODE_ENV === "development") {
     console.log(toLog);
   } else return;
