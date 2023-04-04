@@ -12,6 +12,9 @@ export const trackVoice = (bot: ClientType) => {
   const prisma = new PrismaClient();
 
   bot.on("voiceStateUpdate", async (oldState, newState) => {
+    if (newState.channel && oldState.channel && ((oldState.mute && !newState.mute) || (newState.mute && !oldState.mute) || (oldState.deaf && !newState.deaf) || (newState.deaf && !oldState.deaf)))
+      return;
+
     const voiceTrack = await prisma.voiceTrack.findUnique({ where: { guildId: oldState.guild.id } });
     printDev(voiceTrack);
     if (!voiceTrack || !voiceTrack.logChannel) return;
