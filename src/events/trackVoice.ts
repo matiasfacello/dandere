@@ -12,7 +12,11 @@ export const trackVoice = (bot: ClientType) => {
   const prisma = new PrismaClient();
 
   bot.on("voiceStateUpdate", async (oldState, newState) => {
-    if (newState.channel && oldState.channel && ((oldState.mute && !newState.mute) || (newState.mute && !oldState.mute) || (oldState.deaf && !newState.deaf) || (newState.deaf && !oldState.deaf)))
+    if (
+      newState.channel &&
+      oldState.channel &&
+      (oldState.mute !== newState.mute || oldState.deaf !== newState.deaf || oldState.serverDeaf !== newState.serverDeaf || oldState.serverMute !== newState.serverMute)
+    )
       return;
 
     const voiceTrack = await prisma.voiceTrack.findUnique({ where: { guildId: oldState.guild.id } });
@@ -28,7 +32,7 @@ export const trackVoice = (bot: ClientType) => {
       const msg = `${newState.channel}: ${newState.member?.user} connected.`;
       channelToWrite.send(msg);
       printDev(msg);
-    } else if (newState.channel && oldState.channel) {
+    } else if (newState.channel && oldState.channel && oldState.channelId !== newState.channelId) {
       const msg = `${oldState.channel} -> ${newState.channel}: ${newState.member?.user} moved.`;
       channelToWrite.send(msg);
       printDev(msg);
