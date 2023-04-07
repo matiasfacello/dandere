@@ -3,7 +3,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { PrismaClient } from "@prisma/client";
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("trackvoicedisable").setDescription("Disable voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+  data: new SlashCommandBuilder().setName("trackvoicedisableall").setDescription("Disable all channels voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
     try {
@@ -11,6 +11,13 @@ module.exports = {
 
       if (guildId) {
         const prisma = new PrismaClient();
+        const existingTrack = await prisma.voiceTrack.findFirst({ where: { guildId: guildId } });
+
+        if (!existingTrack) {
+          await interaction.editReply(`There are no voice channels currently tracked.`);
+          return;
+        }
+
         const trackDel = await prisma.voiceTrack.delete({
           where: {
             guildId: guildId,

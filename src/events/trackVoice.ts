@@ -21,7 +21,10 @@ export const trackVoice = (bot: ClientType) => {
 
     const voiceTrack = await prisma.voiceTrack.findUnique({ where: { guildId: oldState.guild.id } });
     printDev(voiceTrack);
-    if (!voiceTrack || !voiceTrack.logChannel) return;
+    if (!voiceTrack || !voiceTrack.logChannel || !voiceTrack.enabled) return;
+
+    if (!voiceTrack.allChannels && voiceTrack.trackChannels && !voiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")) return;
+
     const channelToWrite = (await bot.channels.fetch(voiceTrack.logChannel)) as TextChannel;
 
     if (newState.channel === null && oldState.channel) {

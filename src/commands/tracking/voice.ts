@@ -23,12 +23,14 @@ module.exports = {
           update: {
             enabled: true,
             allChannels: true,
+            trackChannels: null,
             logChannel: channel.id,
           },
           create: {
             guildId: guildId,
             enabled: true,
             allChannels: true,
+            trackChannels: null,
             logChannel: channel.id,
           },
         });
