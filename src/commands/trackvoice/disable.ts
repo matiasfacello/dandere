@@ -3,7 +3,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { PrismaClient } from "@prisma/client";
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("trackvoicedisableall").setDescription("Disable all channels voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+  data: new SlashCommandBuilder().setName("trackvoice-disable").setDescription("Disable all channels voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
     try {

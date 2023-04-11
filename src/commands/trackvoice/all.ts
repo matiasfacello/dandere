@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("trackvoiceall")
+    .setName("trackvoice-all")
     .setDescription("Starts tracking all the voice channels connections")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addChannelOption((option) => option.setName("channel").setDescription("Channel to log connections to").addChannelTypes(ChannelType.GuildText).setRequired(true)),
