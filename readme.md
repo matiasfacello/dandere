@@ -3,13 +3,13 @@
 ## Commands
 
 ```javascript
-/trackvoiceall channel:{textchanell|required}
+/trackvoice-all channel:{textchannel|required}
 ```
 
-Starts tracking all the voice channels for connections and disconections and logs them in {textchanell}
+Starts tracking all the voice channels for connections and disconections and logs them in {textchannel}
 
 ```javascript
-/trackvoicedisable
+/trackvoice-disable
 ```
 
 Stops tracking voice channels and logging them.
