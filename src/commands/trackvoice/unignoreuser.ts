@@ -35,7 +35,7 @@ module.exports = {
           ignoreArr = get.ignoreUsers.split(",").filter((str) => str !== user.id);
         }
 
-        const usersToIgnore = ignoreArr.length > 1 ? ignoreArr.join(",") : null;
+        const usersToIgnore = ignoreArr.length > 0 ? ignoreArr.join(",") : null;
 
         const create = await prisma.voiceTrack.update({
           where: {
