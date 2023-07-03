@@ -28,7 +28,7 @@ module.exports = {
 
         if (get && get.ignoreUsers) {
           if (!get.ignoreUsers.split(",").includes(user.id)) {
-            await interaction.editReply(`User ${user} is not being tracked.`);
+            await interaction.editReply(`User ${user} is not being ignored.`);
             return;
           }
 
@@ -47,7 +47,7 @@ module.exports = {
         });
 
         if (create) {
-          await interaction.editReply(`User ${user} is not longer being tracked. `);
+          await interaction.editReply(`User ${user} is not being ignored anymore. `);
         }
       }
     } catch (err) {
