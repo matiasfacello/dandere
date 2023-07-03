@@ -16,6 +16,7 @@ model VoiceTrack {
   allChannels   Boolean?
   trackChannels String?
   logChannel    String?
+  ignoreUsers   String?
   createdAt     DateTime @default(now())
 
   @@index([guildId], type: Hash)
