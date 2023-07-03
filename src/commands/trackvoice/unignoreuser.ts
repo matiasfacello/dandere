@@ -19,7 +19,7 @@ module.exports = {
         const prisma = new PrismaClient();
         const get = await prisma.voiceTrack.findUnique({ where: { guildId: guildId } });
 
-        if (!get) {
+        if (!get || !get.ignoreUsers) {
           await interaction.editReply(`There are no users currently ignored.`);
           return;
         }
