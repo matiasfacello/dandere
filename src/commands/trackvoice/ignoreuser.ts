@@ -10,6 +10,7 @@ module.exports = {
     .addUserOption((option) => option.setName("user").setRequired(true).setDescription("User to not track")),
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
+
     try {
       const user = interaction.options.getUser("user");
       const guildId = interaction.guildId;
@@ -50,7 +51,7 @@ module.exports = {
         });
 
         if (create && create.ignoreUsers) {
-          await interaction.editReply(`Channel <#${user}> is now being used to track selected voice channels. `);
+          await interaction.editReply(`User <#${user}> is not longer tracked.`);
         }
       }
     } catch (err) {
