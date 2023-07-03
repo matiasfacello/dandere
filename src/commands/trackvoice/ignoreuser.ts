@@ -51,7 +51,7 @@ module.exports = {
         });
 
         if (create && create.ignoreUsers) {
-          await interaction.editReply(`User <#${user}> is not longer tracked.`);
+          await interaction.editReply(`User ${user} is not longer tracked.`);
         }
       }
     } catch (err) {
