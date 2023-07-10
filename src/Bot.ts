@@ -6,7 +6,7 @@ config();
 import { Client, GatewayIntentBits } from "discord.js";
 
 const bot = new Client({
-  intents: [GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers],
 }) as ClientType;
 
 bot.login(process.env.BOT_TOKEN);
