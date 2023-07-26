@@ -5,7 +5,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("notify")
     .setDescription("Notify users of selected role via DM")
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addRoleOption((option) => option.setName("role").setDescription("Role to notify").setRequired(true))
     .addStringOption((option) => option.setName("text").setDescription("Text to send").setRequired(true))
     .addBooleanOption((option) => option.setName("log").setDescription("Leave log in the channel")),
@@ -36,10 +36,10 @@ module.exports = {
       if (text && role) {
         usersToWrite.forEach((user) => {
           try {
-            // interaction.client.users.send(
-            //   user.id,
-            //   `${text}\n\nThis message was sent by ${sender} to the role ${role} from the server ${guild}.\nIn case you do not want to receive this message again, please contact ${sender}.`
-            // );
+            interaction.client.users.send(
+              user.id,
+              `${text}\n\nThis message was sent by ${sender} to the role ${role} from the server ${guild}.\nIn case you do not want to receive this message again, please contact ${sender}.`
+            );
             userSuccessArrays.push(user);
           } catch {
             usersFailedArrays.push(user);
