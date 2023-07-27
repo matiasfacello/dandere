@@ -1,6 +1,7 @@
 import { ChannelType, ChatInputCommandInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { PrismaClient } from "@prisma/client";
+import { voiceTrack } from "db/schema";
+import { dzz, eq } from "db/client";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -11,33 +12,19 @@ module.exports = {
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
     try {
-      const channel = await interaction.options.getChannel("channel");
-      const guildId = await interaction.guildId;
+      const channel = interaction.options.getChannel("channel");
+      const guildId = interaction.guildId;
 
       if (channel && guildId) {
-        const prisma = new PrismaClient();
-        const create = await prisma.voiceTrack.upsert({
-          where: {
-            guildId: guildId,
-          },
-          update: {
-            enabled: true,
-            allChannels: true,
-            trackChannels: null,
-            logChannel: channel.id,
-          },
-          create: {
-            guildId: guildId,
-            enabled: true,
-            allChannels: true,
-            trackChannels: null,
-            logChannel: channel.id,
-          },
-        });
+        const [upsert] = await dzz
+          .insert(voiceTrack)
+          .values({ guildId: guildId, enabled: true, allChannels: true, trackChannels: null, logChannel: channel.id })
+          .onConflictDoUpdate({ target: voiceTrack.guildId, set: { enabled: true, allChannels: true, logChannel: channel.id }, where: eq(voiceTrack.guildId, guildId) })
+          .returning();
 
-        if (create && create.logChannel) {
-          ((await interaction.client.channels.fetch(create.logChannel)) as TextChannel).send(`This channel has been selected to track all voice channels log.`);
-          await interaction.editReply(`Channel <#${create.logChannel}> is now being used to track all voice channels. `);
+        if (upsert && upsert.logChannel) {
+          ((await interaction.client.channels.fetch(upsert.logChannel)) as TextChannel).send(`This channel has been selected to track all voice channels log.`);
+          await interaction.editReply(`Channel <#${upsert.logChannel}> is now being used to track all voice channels. `);
         }
       }
     } catch (err) {

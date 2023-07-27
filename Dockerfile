@@ -4,7 +4,6 @@ RUN mkdir -p /usr/src/bot
 WORKDIR /usr/src/bot
 
 COPY package.json /usr/src/bot
-COPY prisma /usr/src/bot/prisma/
 
 RUN npm install
 
@@ -17,6 +16,5 @@ ENV APP_ID=${APP_ID}
 ARG DATABASE_URL=${DATABASE_URL}
 ENV DATABASE_URL=${DATABASE_URL}
 
-RUN npm run build
 
 CMD ["npm", "start"]

@@ -1,0 +1,139 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "7446bc6d-a402-49fc-9b40-cf196b84e9e2",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "log": {
+      "name": "log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guildId": {
+          "name": "guildId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "guildName": {
+          "name": "guildName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userName": {
+          "name": "userName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "voicetrack": {
+      "name": "voicetrack",
+      "schema": "",
+      "columns": {
+        "guildId": {
+          "name": "guildId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "allChannels": {
+          "name": "allChannels",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trackChannels": {
+          "name": "trackChannels",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logChannel": {
+          "name": "logChannel",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ignoreUsers": {
+          "name": "ignoreUsers",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "voicetrack_guildId_key": {
+          "name": "voicetrack_guildId_key",
+          "columns": [
+            "guildId"
+          ],
+          "isUnique": true
+        },
+        "voicetrack_guildId_idx": {
+          "name": "voicetrack_guildId_idx",
+          "columns": [
+            "guildId"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {
+      "\"VoiceTrack\"": "\"voicetrack\""
+    },
+    "columns": {}
+  }
+}

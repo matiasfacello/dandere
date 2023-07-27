@@ -7,7 +7,7 @@ const config = {
     es6: true,
   },
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 17,
     sourceType: "module",
   },
   rules: {

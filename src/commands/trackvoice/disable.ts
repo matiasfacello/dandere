@@ -1,30 +1,26 @@
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { PrismaClient } from "@prisma/client";
+import { dzz, eq } from "db/client";
+import { voiceTrack } from "db/schema";
 
 module.exports = {
   data: new SlashCommandBuilder().setName("trackvoice-disable").setDescription("Disable all channels voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
     try {
-      const guildId = await interaction.guildId;
+      const guildId = interaction.guildId;
 
       if (guildId) {
-        const prisma = new PrismaClient();
-        const existingTrack = await prisma.voiceTrack.findFirst({ where: { guildId: guildId } });
+        const existingTrack = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, guildId));
 
-        if (!existingTrack) {
+        if (existingTrack.length === 0) {
           await interaction.editReply(`There are no voice channels currently tracked.`);
           return;
         }
 
-        const trackDel = await prisma.voiceTrack.delete({
-          where: {
-            guildId: guildId,
-          },
-        });
+        const trackDel = await dzz.delete(voiceTrack).where(eq(voiceTrack.guildId, guildId));
 
-        if (trackDel) {
+        if (trackDel.length === 0) {
           await interaction.editReply(`Voice channels are not longer being tracked.`);
         }
       }

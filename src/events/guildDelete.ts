@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { dzz, eq } from "db/client";
+import { voiceTrack } from "db/schema";
 
 /**
  * Event for when bot lefts a guild
@@ -6,12 +7,11 @@ import { PrismaClient } from "@prisma/client";
  * @param bot
  */
 export const guildDelete = (bot: ClientType) => {
-  const prisma = new PrismaClient();
   bot.on("guildDelete", async (guild) => {
     const guildId = guild.id;
     try {
-      const voiceTrack = await prisma.voiceTrack.findUnique({ where: { guildId: guildId } });
-      if (voiceTrack) await prisma.voiceTrack.delete({ where: { guildId: guildId } });
+      const [getVoiceTrack] = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, guildId));
+      if (getVoiceTrack.guildId) await dzz.delete(voiceTrack).where(eq(voiceTrack.guildId, guildId));
       console.log(`Left a guild: ${guild.name} <${guild.id}>`);
     } catch (err) {
       console.log("Left a guild err: ", err);

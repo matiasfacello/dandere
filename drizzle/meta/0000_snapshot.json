@@ -1,0 +1,84 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "VoiceTrack": {
+      "name": "VoiceTrack",
+      "schema": "",
+      "columns": {
+        "guildId": {
+          "name": "guildId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "allChannels": {
+          "name": "allChannels",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trackChannels": {
+          "name": "trackChannels",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logChannel": {
+          "name": "logChannel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "ignoreUsers": {
+          "name": "ignoreUsers",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "VoiceTrack_guildId_key": {
+          "name": "VoiceTrack_guildId_key",
+          "columns": [
+            "guildId"
+          ],
+          "isUnique": true
+        },
+        "VoiceTrack_guildId_idx": {
+          "name": "VoiceTrack_guildId_idx",
+          "columns": [
+            "guildId"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

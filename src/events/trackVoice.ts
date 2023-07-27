@@ -1,6 +1,7 @@
 import { type TextChannel } from "discord.js";
 import { printDev } from "../helpers/functions";
-import { PrismaClient } from "@prisma/client";
+import { dzz, eq } from "db/client";
+import { voiceTrack } from "db/schema";
 
 /**
  * Event for tracking voice connections and disconnections.
@@ -9,8 +10,6 @@ import { PrismaClient } from "@prisma/client";
  * @param bot
  */
 export const trackVoice = (bot: ClientType) => {
-  const prisma = new PrismaClient();
-
   bot.on("voiceStateUpdate", async (oldState, newState) => {
     if (
       newState.channel &&
@@ -19,13 +18,13 @@ export const trackVoice = (bot: ClientType) => {
     )
       return;
 
-    const voiceTrack = await prisma.voiceTrack.findUnique({ where: { guildId: oldState.guild.id } });
-    printDev(voiceTrack);
-    if (!voiceTrack || !voiceTrack.logChannel || !voiceTrack.enabled) return;
-    if (voiceTrack.ignoreUsers?.includes(oldState.member?.id || newState.member?.id || "")) return;
-    if (!voiceTrack.allChannels && voiceTrack.trackChannels && !voiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")) return;
+    const [getVoiceTrack] = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, oldState.guild.id));
+    printDev(getVoiceTrack);
+    if (!getVoiceTrack || !getVoiceTrack.logChannel || !getVoiceTrack.enabled) return;
+    if (getVoiceTrack.ignoreUsers?.includes(oldState.member?.id || newState.member?.id || "")) return;
+    if (!getVoiceTrack.allChannels && getVoiceTrack.trackChannels && !getVoiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")) return;
 
-    const channelToWrite = (await bot.channels.fetch(voiceTrack.logChannel)) as TextChannel;
+    const channelToWrite = (await bot.channels.fetch(getVoiceTrack.logChannel)) as TextChannel;
 
     if (newState.channel === null && oldState.channel) {
       const msg = `${oldState.channel}: ${oldState.member?.user} disconnected. `;

@@ -4,29 +4,33 @@
   "description": "Discord bot to track things",
   "main": "src/Bot.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/Bot.js",
-    "dev": "nodemon -e ts --exec \"npm run build && npm start\"",
-    "commands": "tsc && node dist/scripts/DeleteCommands.js && node dist/scripts/DeployCommands.js"
+    "start": "tsx watch src/Bot.ts",
+    "dev": "tsx watch src/Bot.ts",
+    "commands": "tsx src/scripts/DeleteCommands.ts && tsx src/scripts/DeployCommands.ts",
+    "dzz-introspect": "drizzle-kit introspect:pg --config=drizzle.config.ts",
+    "dzz-generate": "drizzle-kit generate:pg --config=drizzle.config.ts",
+    "dzz-migrate": "tsx src/db/migrate.ts",
+    "dzz-studio": "drizzle-kit studio --config=drizzle.config.ts"
   },
   "author": "matiasfacello",
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.6.3",
-    "@prisma/client": "^4.16.2",
-    "discord.js": "^14.11.0"
+    "discord.js": "^14.11.0",
+    "drizzle-orm": "^0.27.2",
+    "postgres": "^3.3.5"
   },
   "devDependencies": {
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "dotenv": "^16.3.1",
+    "drizzle-kit": "^0.19.12",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
-    "nodemon": "^2.0.22",
+    "pg": "^8.11.1",
     "prettier": "2.8.8",
-    "prisma": "^4.16.2",
-    "ts-node": "^10.9.1",
+    "tsx": "^3.12.7",
     "typescript": "^5.1.6"
   }
 }
