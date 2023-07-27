@@ -1,10 +1,13 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { voiceTrack } from "db/schema";
+import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("trackvoice-disable").setDescription("Disable all channels voice tracking.").setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+  data: new SlashCommandBuilder()
+    .setName("trackvoice-disable")
+    .setDescription("Disable all channels voice tracking.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
     try {

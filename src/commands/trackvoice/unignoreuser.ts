@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { voiceTrack } from "db/schema";
+import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()

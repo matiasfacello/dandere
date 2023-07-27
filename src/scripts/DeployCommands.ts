@@ -1,7 +1,8 @@
-import { REST, Routes } from "discord.js";
 import * as fs from "fs";
 import * as path from "path";
+import { REST, Routes } from "discord.js";
 import { config } from "dotenv";
+
 config();
 
 const commands = [];

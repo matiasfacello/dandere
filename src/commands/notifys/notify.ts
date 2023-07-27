@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -59,7 +59,10 @@ module.exports = {
           });
         }
         if (usersFailedArrays.length > 0) {
-          await interaction.followUp({ content: `Failed to send message to ${usersFailedArrays.join(", ")}.`, ephemeral: log ? false : true });
+          await interaction.followUp({
+            content: `Failed to send message to ${usersFailedArrays.join(", ")}.`,
+            ephemeral: log ? false : true,
+          });
         }
       }
     } catch (err) {

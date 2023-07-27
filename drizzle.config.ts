@@ -1,6 +1,6 @@
+import { config } from "dotenv";
 import type { Config } from "drizzle-kit";
 
-import { config } from "dotenv";
 config();
 
 export default {

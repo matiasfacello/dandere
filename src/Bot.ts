@@ -1,9 +1,8 @@
+import { Client, GatewayIntentBits } from "discord.js";
+import { config } from "dotenv";
 import { commandsCreate, commandsEvent, guildCreate, guildDelete, trackVoice } from "./events/index";
 
-import { config } from "dotenv";
 config();
-
-import { Client, GatewayIntentBits } from "discord.js";
 
 const bot = new Client({
   intents: [GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers],

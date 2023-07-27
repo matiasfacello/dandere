@@ -1,6 +1,6 @@
-import { Collection } from "discord.js";
 import * as fs from "fs";
 import * as path from "path";
+import { Collection } from "discord.js";
 
 /**
  * Create commands for the bot

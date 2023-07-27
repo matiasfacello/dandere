@@ -1,7 +1,7 @@
-import { type TextChannel } from "discord.js";
-import { printDev } from "../helpers/functions";
 import { dzz, eq } from "db/client";
 import { voiceTrack } from "db/schema";
+import { type TextChannel } from "discord.js";
+import { printDev } from "../helpers/functions";
 
 /**
  * Event for tracking voice connections and disconnections.
@@ -14,7 +14,10 @@ export const trackVoice = (bot: ClientType) => {
     if (
       newState.channel &&
       oldState.channel &&
-      (oldState.mute !== newState.mute || oldState.deaf !== newState.deaf || oldState.serverDeaf !== newState.serverDeaf || oldState.serverMute !== newState.serverMute)
+      (oldState.mute !== newState.mute ||
+        oldState.deaf !== newState.deaf ||
+        oldState.serverDeaf !== newState.serverDeaf ||
+        oldState.serverMute !== newState.serverMute)
     )
       return;
 
@@ -22,7 +25,12 @@ export const trackVoice = (bot: ClientType) => {
     printDev(getVoiceTrack);
     if (!getVoiceTrack || !getVoiceTrack.logChannel || !getVoiceTrack.enabled) return;
     if (getVoiceTrack.ignoreUsers?.includes(oldState.member?.id || newState.member?.id || "")) return;
-    if (!getVoiceTrack.allChannels && getVoiceTrack.trackChannels && !getVoiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")) return;
+    if (
+      !getVoiceTrack.allChannels &&
+      getVoiceTrack.trackChannels &&
+      !getVoiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")
+    )
+      return;
 
     const channelToWrite = (await bot.channels.fetch(getVoiceTrack.logChannel)) as TextChannel;
 
