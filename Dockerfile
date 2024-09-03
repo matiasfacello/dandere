@@ -5,7 +5,7 @@ WORKDIR /usr/src/bot
 
 COPY package.json /usr/src/bot
 
-RUN npm install
+RUN npm ci
 
 COPY . /usr/src/bot
 
