@@ -1,6 +1,6 @@
 import { dzz, eq } from "db/client";
-import { voiceTrack } from "db/schema";
-import { type TextChannel } from "discord.js";
+import { log, voiceTrack } from "db/schema";
+import { VoiceState, type TextChannel } from "discord.js";
 import { printDev } from "../helpers/functions";
 
 /**
@@ -11,41 +11,68 @@ import { printDev } from "../helpers/functions";
  */
 export const trackVoice = (bot: ClientType) => {
   bot.on("voiceStateUpdate", async (oldState, newState) => {
-    if (
-      newState.channel &&
-      oldState.channel &&
-      (oldState.mute !== newState.mute ||
-        oldState.deaf !== newState.deaf ||
-        oldState.serverDeaf !== newState.serverDeaf ||
-        oldState.serverMute !== newState.serverMute)
-    )
-      return;
+    // Validate if the state change is worth tracking
+    if (!validateTracking(oldState, newState)) return;
 
+    // Validate if the server is tracked
     const [getVoiceTrack] = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, oldState.guild.id));
     printDev(getVoiceTrack);
-    if (!getVoiceTrack || !getVoiceTrack.logChannel || !getVoiceTrack.enabled) return;
-    if (getVoiceTrack.ignoreUsers?.includes(oldState.member?.id || newState.member?.id || "")) return;
-    if (
-      !getVoiceTrack.allChannels &&
-      getVoiceTrack.trackChannels &&
-      !getVoiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")
-    )
-      return;
 
+    if (!getVoiceTrack || !getVoiceTrack.logChannel || !getVoiceTrack.enabled) return;
+
+    if (getVoiceTrack.ignoreUsers?.includes(oldState.member?.id || newState.member?.id || "")) return;
+
+    if (!getVoiceTrack.allChannels) return;
+    if (getVoiceTrack.trackChannels && !getVoiceTrack.trackChannels.split(",").includes(oldState.channelId || newState.channelId || "")) return;
+
+    // Action needs to be tracked
     const channelToWrite = (await bot.channels.fetch(getVoiceTrack.logChannel)) as TextChannel;
 
+    let msg = "";
+
     if (newState.channel === null && oldState.channel) {
-      const msg = `${oldState.channel}: ${oldState.member?.user} disconnected. `;
-      channelToWrite.send(msg);
-      printDev(msg);
+      msg = `${oldState.channel}: ${oldState.member?.user} disconnected. `;
+      writeToDbLog({ oldS: oldState });
     } else if (oldState.channel === null && newState.channel) {
-      const msg = `${newState.channel}: ${newState.member?.user} connected.`;
-      channelToWrite.send(msg);
-      printDev(msg);
+      msg = `${newState.channel}: ${newState.member?.user} connected.`;
+      writeToDbLog({ newS: newState });
     } else if (newState.channel && oldState.channel && oldState.channelId !== newState.channelId) {
-      const msg = `${oldState.channel} -> ${newState.channel}: ${newState.member?.user} moved.`;
-      channelToWrite.send(msg);
-      printDev(msg);
+      msg = `${oldState.channel} -> ${newState.channel}: ${newState.member?.user} moved.`;
+      writeToDbLog({ oldS: oldState, newS: newState });
     }
+
+    channelToWrite.send(msg);
+    printDev(msg);
   });
 };
+
+function validateTracking(oldState: VoiceState, newState: VoiceState) {
+  if (oldState && newState) {
+    if (oldState.mute !== newState.mute) return false;
+    if (oldState.serverMute !== newState.serverMute) return false;
+
+    if (oldState.deaf !== newState.deaf) return false;
+    if (oldState.serverDeaf !== newState.serverDeaf) return false;
+  }
+  return true;
+}
+
+async function writeToDbLog({ oldS, newS }: { oldS?: VoiceState; newS?: VoiceState }) {
+  const action = oldS && newS ? 102 : oldS ? 103 : 101; // 101 - connected, 102 - moved, 103 - disconnected
+  const state = newS || oldS;
+
+  if (!state) return;
+
+  const [insert] = await dzz
+    .insert(log)
+    .values({
+      action,
+      guildId: state.guild.id,
+      guildName: state.guild.name,
+      channelId: state.channel?.id,
+      channelName: state.channel?.name,
+      userId: state.member?.id,
+      userName: state.member?.user.username,
+    })
+    .returning();
+}

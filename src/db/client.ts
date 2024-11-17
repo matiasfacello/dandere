@@ -6,7 +6,7 @@ import postgres from "postgres";
 config();
 
 const connectionString = process.env.DATABASE_URL;
-const sql = postgres(connectionString, { max: 1 });
-const dzz = drizzle(sql);
+const sql = postgres(connectionString, { max: 1, ssl: false });
+const dzz = drizzle({ client: sql });
 
 export { dzz, eq };

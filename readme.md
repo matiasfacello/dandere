@@ -67,3 +67,11 @@ Might not all be necessary, but working on it.
 - Bot Usage Tracking
 - [x] Switch from Prisma to Drizzle
 - [x] Swtich from Node to TSX
+
+## Info
+
+### Log IDs
+
+101 - connected
+102 - moved
+103 - disconnected

@@ -1,4 +1,4 @@
-import { boolean, index, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, serial, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
 export const voiceTrack = pgTable(
   "voicetrack",
@@ -11,20 +11,21 @@ export const voiceTrack = pgTable(
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     ignoreUsers: varchar("ignoreUsers"),
   },
-  (table) => {
-    return {
-      guildIdKey: uniqueIndex("voicetrack_guildId_key").on(table.guildId),
-      guildIdIdx: index("voicetrack_guildId_idx").on(table.guildId),
-    };
-  }
+  (table) => [uniqueIndex("voicetrack_guildId_key").on(table.guildId), index("voicetrack_guildId_idx").on(table.guildId)]
 );
 
-export const log = pgTable("log", {
-  id: serial("id").primaryKey().notNull(),
-  action: varchar("action").notNull(),
-  guildId: varchar("guildId"),
-  guildName: varchar("guildName"),
-  userId: varchar("userId"),
-  userName: varchar("userName"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+export const log = pgTable(
+  "log",
+  {
+    id: serial("id").primaryKey().notNull(),
+    action: integer("action").notNull(),
+    guildId: varchar("guildId"),
+    guildName: varchar("guildName"),
+    channelId: varchar("channelId"),
+    channelName: varchar("channelName"),
+    userId: varchar("userId"),
+    userName: varchar("userName"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("log_id_key").on(table.id), index("log_guildId_idx").on(table.guildId), index("log_userId_idx").on(table.userId)]
+);

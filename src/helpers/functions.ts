@@ -10,5 +10,6 @@ config();
 export const printDev = (toLog: any) => {
   if (process.env.NODE_ENV === "development") {
     console.log(toLog);
-  } else return;
+  }
+  return;
 };
