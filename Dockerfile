@@ -1,4 +1,4 @@
-FROM node:18.15-alpine3.16
+FROM node:22.11.0-alpine3.20
 
 RUN mkdir -p /usr/src/bot
 WORKDIR /usr/src/bot
