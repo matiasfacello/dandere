@@ -32,22 +32,20 @@ export const trackVoice = (bot: ClientType) => {
 
     if (newState.channel === null && oldState.channel) {
       msg = `${oldState.channel}: ${oldState.member?.user} disconnected. `;
-      writeToDbLog({ oldS: oldState });
     } else if (oldState.channel === null && newState.channel) {
       msg = `${newState.channel}: ${newState.member?.user} connected.`;
-      writeToDbLog({ newS: newState });
     } else if (newState.channel && oldState.channel && oldState.channelId !== newState.channelId) {
       msg = `${oldState.channel} -> ${newState.channel}: ${newState.member?.user} moved.`;
-      writeToDbLog({ oldS: oldState, newS: newState });
     }
 
     channelToWrite.send(msg);
+    writeToDbLog({ oldS: oldState, newS: newState });
     printDev(msg);
   });
 };
 
 function validateTracking(oldState: VoiceState, newState: VoiceState) {
-  if (oldState && newState) {
+  if (oldState.channel && newState.channel) {
     if (oldState.mute !== newState.mute) return false;
     if (oldState.serverMute !== newState.serverMute) return false;
 
@@ -58,8 +56,8 @@ function validateTracking(oldState: VoiceState, newState: VoiceState) {
 }
 
 async function writeToDbLog({ oldS, newS }: { oldS?: VoiceState; newS?: VoiceState }) {
-  const action = oldS && newS ? 102 : oldS ? 103 : 101; // 101 - connected, 102 - moved, 103 - disconnected
-  const state = newS || oldS;
+  const action = oldS?.channel && newS?.channel ? 102 : oldS?.channel ? 103 : 101; // 101 - connected, 102 - moved, 103 - disconnected
+  const state = newS?.channel ? newS : oldS;
 
   if (!state) return;
 
