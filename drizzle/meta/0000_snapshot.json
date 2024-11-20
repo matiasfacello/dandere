@@ -1,9 +1,146 @@
 {
-  "id": "3aef0867-c4e4-48cc-9422-05e88c12f678",
+  "id": "3f39e99f-ef46-4b8d-a197-71ccb83fb6a3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.channelTracking": {
+      "name": "channelTracking",
+      "schema": "",
+      "columns": {
+        "guildId": {
+          "name": "guildId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "channelId": {
+          "name": "channelId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "voicetrack_guildId_key": {
+          "name": "voicetrack_guildId_key",
+          "columns": [
+            {
+              "expression": "guildId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "voicetrack_guildId_idx": {
+          "name": "voicetrack_guildId_idx",
+          "columns": [
+            {
+              "expression": "guildId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.guild": {
+      "name": "guild",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "guildId": {
+          "name": "guildId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trackAll": {
+          "name": "trackAll",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "logChannelId": {
+          "name": "logChannelId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ignoreUsers": {
+          "name": "ignoreUsers",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "guild_guildId_key": {
+          "name": "guild_guildId_key",
+          "columns": [
+            {
+              "expression": "guildId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.log": {
       "name": "log",
       "schema": "",
@@ -118,40 +255,39 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.voicetrack": {
-      "name": "voicetrack",
+    "public.premiumPlans": {
+      "name": "premiumPlans",
       "schema": "",
       "columns": {
-        "guildId": {
-          "name": "guildId",
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "allChannels": {
-          "name": "allChannels",
-          "type": "boolean",
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "trackChannels": {
-          "name": "trackChannels",
-          "type": "varchar",
+        "duration": {
+          "name": "duration",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "logChannel": {
-          "name": "logChannel",
-          "type": "varchar",
+        "price": {
+          "name": "price",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
@@ -159,20 +295,80 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "ignoreUsers": {
-          "name": "ignoreUsers",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
-        "voicetrack_guildId_key": {
-          "name": "voicetrack_guildId_key",
+        "premium_plans_id_key": {
+          "name": "premium_plans_id_key",
           "columns": [
             {
-              "expression": "guildId",
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.premiumSubscription": {
+      "name": "premiumSubscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "guildId": {
+          "name": "guildId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "planId": {
+          "name": "planId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "premiumFrom": {
+          "name": "premiumFrom",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "premiumUntil": {
+          "name": "premiumUntil",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "premium_id_key": {
+          "name": "premium_id_key",
+          "columns": [
+            {
+              "expression": "id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -183,8 +379,8 @@
           "method": "btree",
           "with": {}
         },
-        "voicetrack_guildId_idx": {
-          "name": "voicetrack_guildId_idx",
+        "premium_guildId_idx": {
+          "name": "premium_guildId_idx",
           "columns": [
             {
               "expression": "guildId",

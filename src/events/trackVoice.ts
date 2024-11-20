@@ -38,22 +38,18 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
   if (!state.channel || !state.member) return;
 
   // Validate if the server is tracked
-  const [getVoiceTrack] = await dzz
-    .select()
-    .from(channelTracking)
-    .innerJoin(guild, eq(guild.guildId, channelTracking.guildId))
-    .where(eq(channelTracking.channelId, state.channel.id));
+  const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, state.guild.id));
 
   if (!getVoiceTrack) return;
 
   printDev(getVoiceTrack);
 
-  if (getVoiceTrack.guild.ignoreUsers?.includes(state.member.id)) return;
+  if (getVoiceTrack.ignoreUsers?.includes(state.member.id)) return;
 
   const msg = `${state.channel}: ${state.member.user} ${action === 101 ? "connected" : "disconnected"}.`;
 
-  if (getVoiceTrack.guild.logChannelId) {
-    ((await bot.channels.fetch(getVoiceTrack.guild.logChannelId)) as TextChannel).send(msg);
+  if (getVoiceTrack.logChannelId) {
+    ((await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel).send(msg);
   }
 
   await dzz.insert(log).values({
@@ -79,22 +75,18 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
   if (oldState.deaf !== newState.deaf) return;
   if (oldState.serverDeaf !== newState.serverDeaf) return;
 
-  const [getVoiceTrack] = await dzz
-    .select()
-    .from(channelTracking)
-    .innerJoin(guild, eq(guild.guildId, channelTracking.guildId))
-    .where(eq(channelTracking.channelId, newState.channel.id));
+  const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, newState.guild.id));
 
   if (!getVoiceTrack) return;
 
   printDev(getVoiceTrack);
 
-  if (getVoiceTrack.guild.ignoreUsers?.includes(newState.member.id)) return;
+  if (getVoiceTrack.ignoreUsers?.includes(newState.member.id)) return;
 
   const msg = `${oldState.channel} -> ${newState.channel}: ${newState.member.user} moved.`;
 
-  if (getVoiceTrack.guild.logChannelId) {
-    ((await bot.channels.fetch(getVoiceTrack.guild.logChannelId)) as TextChannel).send(msg);
+  if (getVoiceTrack.logChannelId) {
+    ((await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel).send(msg);
   }
 
   await dzz.insert(log).values({
