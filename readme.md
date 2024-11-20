@@ -72,6 +72,16 @@ Might not all be necessary, but working on it.
 
 ### Log IDs
 
-101 - connected
-102 - moved
-103 - disconnected
+101 - user -> connected voice chat
+102 - user -> moved voice chat
+103 - user -> disconnected voice chat
+
+201 - guild -> created
+202 - guild -> deleted
+211 - guild -> ignore user
+212 - guild -> unignore user
+
+301 - channel -> tracked
+302 - channel -> untracked
+303 - channel -> tracked all
+304 - channel -> untracked all

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
-import { voiceTrack } from "db/schema";
-import { ChatInputCommandInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
+import { guild, log } from "db/schema";
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, TextChannel } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -17,7 +17,7 @@ module.exports = {
       const guildId = interaction.guildId;
 
       if (user && guildId) {
-        const [get] = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, guildId));
+        const [get] = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
 
         let ignoreArr: string[] = [];
 
@@ -36,19 +36,23 @@ module.exports = {
         // Add user to ignore list
         ignoreArr.push(user.id as string);
 
-        const [upsert] = await dzz
-          .insert(voiceTrack)
-          .values({ guildId: guildId, ignoreUsers: ignoreArr.join(",") })
-          .onConflictDoUpdate({
-            target: voiceTrack.guildId,
-            set: { ignoreUsers: ignoreArr.join(",") },
-            where: eq(voiceTrack.guildId, guildId),
-          })
+        const [update] = await dzz
+          .update(guild)
+          .set({ ignoreUsers: ignoreArr.join(",") })
+          .where(eq(guild.guildId, guildId))
           .returning();
 
-        if (upsert && upsert.ignoreUsers) {
+        if (update) {
           await interaction.editReply(`User ${user} is now being ignored.`);
         }
+
+        await dzz.insert(log).values({
+          action: 211,
+          guildId: guildId,
+          guildName: interaction.guild?.name || null,
+          userId: user.id,
+          userName: user.username,
+        });
       }
     } catch (err) {
       console.log("/trackvoice-ignoreuser err: ", err);

@@ -13,6 +13,6 @@ export default {
     user: process.env.DZZ_USER,
     password: process.env.DZZ_PASSWORD,
     database: process.env.DZZ_DATABASE,
-    ssl: false,
+    ssl: process.env.NODE_ENV === "production" ? true : false,
   },
 } satisfies Config;

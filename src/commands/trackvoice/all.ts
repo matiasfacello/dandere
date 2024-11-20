@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
-import { voiceTrack } from "db/schema";
+import { guild, log } from "db/schema";
 import { ChannelType, ChatInputCommandInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
 
 module.exports = {
@@ -19,27 +19,31 @@ module.exports = {
 
       if (channel && guildId) {
         const [upsert] = await dzz
-          .insert(voiceTrack)
+          .insert(guild)
           .values({
             guildId: guildId,
-            enabled: true,
-            allChannels: true,
-            trackChannels: null,
-            logChannel: channel.id,
+            logChannelId: channel.id,
+            trackAll: true,
           })
           .onConflictDoUpdate({
-            target: voiceTrack.guildId,
-            set: { enabled: true, allChannels: true, logChannel: channel.id },
-            where: eq(voiceTrack.guildId, guildId),
+            target: guild.guildId,
+            set: { trackAll: true, logChannelId: channel.id },
+            where: eq(guild.guildId, guildId),
           })
           .returning();
 
-        if (upsert && upsert.logChannel) {
-          ((await interaction.client.channels.fetch(upsert.logChannel)) as TextChannel).send(
+        if (upsert && upsert.logChannelId) {
+          ((await interaction.client.channels.fetch(upsert.logChannelId)) as TextChannel).send(
             `This channel has been selected to track all voice channels log.`
           );
-          await interaction.editReply(`Channel <#${upsert.logChannel}> is now being used to track all voice channels. `);
+          await interaction.editReply(`Channel <#${upsert.logChannelId}> is now being used to track all voice channels. `);
         }
+
+        await dzz.insert(log).values({
+          action: 303,
+          guildId: guildId,
+          guildName: interaction.guild?.name || null,
+        });
       }
     } catch (err) {
       console.log("/trackvoiceall err: ", err);

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
-import { voiceTrack } from "db/schema";
+import { guild, log } from "db/schema";
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
       const guildId = interaction.guildId;
 
       if (user && guildId) {
-        const [get] = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, guildId));
+        const [get] = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
 
         // Check if no user is being ignored
         if (!get || !get.ignoreUsers) {
@@ -39,15 +39,19 @@ module.exports = {
 
         const usersToIgnore = ignoreArr.length > 0 ? ignoreArr.join(",") : null;
 
-        const [update] = await dzz
-          .update(voiceTrack)
-          .set({ ignoreUsers: ignoreArr.join(",") })
-          .where(eq(voiceTrack.guildId, guildId))
-          .returning();
+        const [update] = await dzz.update(guild).set({ ignoreUsers: usersToIgnore }).where(eq(guild.guildId, guildId)).returning();
 
         if (update) {
           await interaction.editReply(`User ${user} is not being ignored anymore. `);
         }
+
+        await dzz.insert(log).values({
+          action: 212,
+          guildId: guildId,
+          guildName: interaction.guild?.name || null,
+          userId: user.id,
+          userName: user.username,
+        });
       }
     } catch (err) {
       console.log("/trackvoice-unignoreuser err: ", err);

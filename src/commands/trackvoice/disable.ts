@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
-import { voiceTrack } from "db/schema";
+import { guild, log } from "db/schema";
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
@@ -14,18 +14,24 @@ module.exports = {
       const guildId = interaction.guildId;
 
       if (guildId) {
-        const existingTrack = await dzz.select().from(voiceTrack).where(eq(voiceTrack.guildId, guildId));
+        const existingTrack = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
 
         if (existingTrack.length === 0) {
           await interaction.editReply(`There are no voice channels currently tracked.`);
           return;
         }
 
-        const trackDel = await dzz.delete(voiceTrack).where(eq(voiceTrack.guildId, guildId));
+        const [trackUpdate] = await dzz.update(guild).set({ trackAll: false }).where(eq(guild.guildId, guildId)).returning();
 
-        if (trackDel.length === 0) {
+        if (!trackUpdate.trackAll) {
           await interaction.editReply(`Voice channels are not longer being tracked.`);
         }
+
+        await dzz.insert(log).values({
+          action: 304,
+          guildId: guildId,
+          guildName: interaction.guild?.name || null,
+        });
       }
     } catch (err) {
       console.log("/trackvoicedisable err: ", err);
