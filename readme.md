@@ -35,14 +35,6 @@ Unignore {user} for all channels voice tracking.
 ---
 
 ```ts
-/nofity {role : role.required} {text: string.required} {log : bool}
-```
-
-Notify users of selected {role} via DM sending them {text}. If {log} is true, message is not ephemeral.
-
----
-
-```ts
 /clear {amount : number.required}
 ```
 
@@ -64,7 +56,7 @@ Might not all be necessary, but working on it.
 - Commands
   - [ ] Bug reporting
   - [ ] Command sugestion
-- Bot Usage Tracking
+- [x] Bot Usage Tracking
 - [x] Switch from Prisma to Drizzle
 - [x] Swtich from Node to TSX
 
@@ -72,16 +64,16 @@ Might not all be necessary, but working on it.
 
 ### Log IDs
 
-101 - user -> connected voice chat
-102 - user -> moved voice chat
-103 - user -> disconnected voice chat
+- 101 - user -> connected voice chat
+- 102 - user -> moved voice chat
+- 103 - user -> disconnected voice chat
 
-201 - guild -> created
-202 - guild -> deleted
-211 - guild -> ignore user
-212 - guild -> unignore user
+- 201 - guild -> created
+- 202 - guild -> deleted
+- 211 - guild -> ignore user
+- 212 - guild -> unignore user
 
-301 - channel -> tracked
-302 - channel -> untracked
-303 - channel -> tracked all
-304 - channel -> untracked all
+- 301 - channel -> tracked
+- 302 - channel -> untracked
+- 303 - channel -> tracked all
+- 304 - channel -> untracked all
