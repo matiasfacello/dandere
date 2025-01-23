@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { guild, log } from "db/schema";
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addUserOption((option) => option.setName("user").setRequired(true).setDescription("User to unignore")),
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     try {
       const user = interaction.options.getUser("user");

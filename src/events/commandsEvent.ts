@@ -1,4 +1,4 @@
-import { Events } from "discord.js";
+import { Events, MessageFlags } from "discord.js";
 
 /**
  * Event for tracking messages for slash commands.
@@ -24,12 +24,12 @@ export const commandsEvent = (bot: ClientType) => {
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           content: "There was an error while executing this command!",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       } else {
         await interaction.reply({
           content: "There was an error while executing this command!",
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
     }

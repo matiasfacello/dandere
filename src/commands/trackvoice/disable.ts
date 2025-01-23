@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { guild, log } from "db/schema";
-import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,7 +9,7 @@ module.exports = {
     .setDescription("Disable all channels voice tracking.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     try {
       const guildId = interaction.guildId;
 

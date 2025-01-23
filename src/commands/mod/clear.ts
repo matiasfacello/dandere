@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChatInputCommandInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
+import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits, TextChannel } from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -13,12 +13,12 @@ module.exports = {
     if (!interaction.memberPermissions?.has("ManageMessages"))
       return interaction.reply({
         content: "You do not have permissions to manage messages.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     if (!interaction.guild?.members.me?.permissions.has("ManageMessages"))
       return interaction.reply({
         content: "I do not have permissions to manage messages.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
     const amount = interaction.options.getInteger("amount");
@@ -26,14 +26,14 @@ module.exports = {
     if (amount && isNaN(amount)) {
       await interaction.reply({
         content: "Please insert a valid amount between 1 to 100.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     if (amount && (amount > 100 || amount < 1)) {
       await interaction.reply({
         content: "Please insert a valid amount between 1 to 100.",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
 
@@ -41,13 +41,13 @@ module.exports = {
       const bulkDel = await (interaction.channel as TextChannel).bulkDelete(amount!);
       interaction.reply({
         content: `Deleted ${bulkDel.size} messages.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     } catch (err) {
       console.log("Clear command err: ", err);
       interaction.reply({
         content: `There was an error deleting the messages.`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },
