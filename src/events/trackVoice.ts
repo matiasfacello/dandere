@@ -78,6 +78,8 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
   if (oldState.deaf !== newState.deaf) return;
   if (oldState.serverDeaf !== newState.serverDeaf) return;
 
+  if (oldState.selfVideo !== newState.selfVideo) return;
+
   // User started or stopped streaming
   if (oldState.streaming !== newState.streaming) {
     actionNumber = newState.streaming ? 104 : 105;
