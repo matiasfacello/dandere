@@ -66,6 +66,9 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
 }
 
 async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newState: VoiceState) {
+  let actionNumber = 102;
+  let msg = null;
+
   if (!oldState.channel || !newState.channel) return;
   if (!oldState.member || !newState.member) return;
 
@@ -75,6 +78,11 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
   if (oldState.deaf !== newState.deaf) return;
   if (oldState.serverDeaf !== newState.serverDeaf) return;
 
+  // User started or stopped streaming
+  if (oldState.streaming !== newState.streaming) {
+    actionNumber = newState.streaming ? 104 : 105;
+  }
+
   const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, newState.guild.id));
 
   if (!getVoiceTrack) return;
@@ -83,14 +91,18 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
 
   if (getVoiceTrack.ignoreUsers?.includes(newState.member.id)) return;
 
-  const msg = `${oldState.channel} -> ${newState.channel}: ${newState.member.user} moved.`;
+  if (actionNumber === 104 || actionNumber === 105) {
+    msg = `${newState.channel}: ${newState.member.user} ${actionNumber === 104 ? "started streaming" : "stopped streaming"}.`;
+  } else {
+    msg = `${oldState.channel} -> ${newState.channel}: ${newState.member.user} moved.`;
+  }
 
   if (getVoiceTrack.logChannelId) {
     ((await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel).send(msg);
   }
 
   await dzz.insert(log).values({
-    action: 102,
+    action: actionNumber,
     guildId: newState.guild.id,
     guildName: newState.guild.name,
     channelId: newState.channel.id,

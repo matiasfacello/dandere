@@ -67,6 +67,8 @@ Might not all be necessary, but working on it.
 - 101 - user -> connected voice chat
 - 102 - user -> moved voice chat
 - 103 - user -> disconnected voice chat
+- 104 - user -> started streaming
+- 105 - user -> stopped streaming
 
 - 201 - guild -> created
 - 202 - guild -> deleted
