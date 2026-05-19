@@ -54,8 +54,12 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("/trackvoice-unignoreuser err: ", err);
-      interaction.editReply(`There was an error using this function.`);
+      console.error("/trackvoice-unignoreuser err: ", err);
+      try {
+        await interaction.editReply(`There was an error using this function.`);
+      } catch (replyError) {
+        console.error("Failed to send error reply to interaction:", replyError);
+      }
     }
   },
 };

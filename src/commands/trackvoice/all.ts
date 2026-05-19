@@ -33,9 +33,12 @@ module.exports = {
           .returning();
 
         if (upsert && upsert.logChannelId) {
-          ((await interaction.client.channels.fetch(upsert.logChannelId)) as TextChannel).send(
-            `This channel has been selected to track all voice channels log.`
-          );
+          try {
+            const logChannel = (await interaction.client.channels.fetch(upsert.logChannelId)) as TextChannel;
+            await logChannel.send(`This channel has been selected to track all voice channels log.`);
+          } catch (err) {
+            console.error(`Failed to send message to log channel ${upsert.logChannelId}:`, err);
+          }
           await interaction.editReply(`Channel <#${upsert.logChannelId}> is now being used to track all voice channels. `);
         }
 
@@ -46,8 +49,12 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("/trackvoiceall err: ", err);
-      interaction.editReply(`There was an error using this function.`);
+      console.error("/trackvoiceall err: ", err);
+      try {
+        await interaction.editReply(`There was an error using this function.`);
+      } catch (replyError) {
+        console.error("Failed to send error reply to interaction:", replyError);
+      }
     }
   },
 };

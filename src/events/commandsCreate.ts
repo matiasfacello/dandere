@@ -18,12 +18,16 @@ export const commandsCreate = (bot: ClientType) => {
     const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".ts"));
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const command = require(filePath);
-      if ("data" in command && "execute" in command) {
-        bot.commands.set(command.data.name, command);
-      } else {
-        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const command = require(filePath);
+        if ("data" in command && "execute" in command) {
+          bot.commands.set(command.data.name, command);
+        } else {
+          console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+        }
+      } catch (err) {
+        console.error(`[ERROR] Failed to load command at ${filePath}:`, err);
       }
     }
   }

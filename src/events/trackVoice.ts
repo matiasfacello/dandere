@@ -11,26 +11,29 @@ import { printDev } from "../helpers/functions";
  */
 export const trackVoice = (bot: ClientType) => {
   bot.on("voiceStateUpdate", async (oldState, newState) => {
-    // Joiningconnection
-    if (!oldState.channel) {
-      oneChannelBehavior(bot, newState, 101);
-      return;
-    }
+    try {
+      // Joining connection
+      if (!oldState.channel) {
+        await oneChannelBehavior(bot, newState, 101);
+        return;
+      }
 
-    // Leaving connection
-    if (!newState.channel) {
-      oneChannelBehavior(bot, oldState, 103);
-      return;
-    }
+      // Leaving connection
+      if (!newState.channel) {
+        await oneChannelBehavior(bot, oldState, 103);
+        return;
+      }
 
-    // Cross guild are considered only connections
-    if (oldState.guild.id !== newState.guild.id) {
-      oneChannelBehavior(bot, newState, 101);
-      return;
-    }
+      // Cross guild are considered only connections
+      if (oldState.guild.id !== newState.guild.id) {
+        await oneChannelBehavior(bot, newState, 101);
+        return;
+      }
 
-    twoChannelBehavior(bot, oldState, newState);
-    return;
+      await twoChannelBehavior(bot, oldState, newState);
+    } catch (err) {
+      console.error("voiceStateUpdate handler error:", err);
+    }
   });
 };
 
@@ -49,7 +52,12 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
   const msg = `${state.channel}: ${state.member.user} ${action === 101 ? "connected" : "disconnected"}.`;
 
   if (getVoiceTrack.logChannelId) {
-    ((await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel).send(msg);
+    try {
+      const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
+      await channel.send(msg);
+    } catch (err) {
+      console.error(`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+    }
   }
 
   await dzz.insert(log).values({
@@ -97,7 +105,12 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
   }
 
   if (getVoiceTrack.logChannelId) {
-    ((await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel).send(msg);
+    try {
+      const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
+      await channel.send(msg);
+    } catch (err) {
+      console.error(`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+    }
   }
 
   await dzz.insert(log).values({

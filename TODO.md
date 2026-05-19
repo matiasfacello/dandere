@@ -1,19 +1,5 @@
 # TODO
 
-## Missing Error Handling
-
-- **`src/Bot.ts`** — `bot.login(process.env.BOT_TOKEN)` has no `.catch()`. An invalid token produces a confusing unhandled rejection at startup. Add explicit error handling and log the cause.
-
-- **`src/db/migrate.ts`** — Migration runs with no error handling. If it fails, the bot starts anyway with a broken schema. Wrap in try/catch and call `process.exit(1)` on failure.
-
-- **`src/events/trackVoice.ts` L41, L52, L88, L102** — `bot.channels.fetch()` can reject if the channel was deleted. Each call should be wrapped in try/catch (or use `.catch()`), and the event handler should bail out gracefully on a missing channel rather than throwing an unhandled rejection.
-
-- **`src/events/commandsEvent.ts`** — The catch block attempts `reply()` or `editReply()` without its own error handling. A second failure (e.g. the interaction already timed out) will produce an unhandled rejection. Wrap the catch body in its own try/catch.
-
-- **`src/events/commandsCreate.ts`** — Files that fail to load are logged as warnings but execution continues. A command that partially loaded (wrong export shape) will cause a runtime crash later when invoked. Consider a stricter validation on load.
-
-- **`src/events/guildCreate.ts` / `guildDelete.ts`** — Catch handlers use `console.log()` for errors. Switch to `console.error()` so errors are distinguishable from info output.
-
 ## Security
 
 - **`Dockerfile` L13–18** — `BOT_TOKEN` and `DATABASE_URL` are passed as build `ARG`s and promoted to `ENV`. They end up in the image build history and can be extracted from any image layer. Pass secrets at container runtime via `-e` or Docker secrets, not at build time.
@@ -71,3 +57,10 @@
 - **`src/db/client.ts`** — Raised connection pool from `max: 1` to `max: 10`.
 - **`src/commands/trackvoice/disable.ts`** — Added null guard on `trackUpdate` before accessing `.trackAll`.
 - **`.env.example`** — Fixed `DZZ_PORT` from `3306` (MySQL) to `5432` (PostgreSQL).
+- **`src/Bot.ts`** — Added `.catch()` to `bot.login()` with `process.exit(1)` on failure.
+- **`src/db/migrate.ts`** — Wrapped migration in `.catch()` with `process.exit(1)` on failure.
+- **`src/events/trackVoice.ts`** — Wrapped both `bot.channels.fetch()` calls in try/catch; added top-level try/catch in the event handler (with helper calls now properly awaited).
+- **`src/events/commandsEvent.ts`** — Wrapped the catch body's `reply()`/`followUp()` in its own try/catch.
+- **`src/events/commandsCreate.ts`** — Wrapped `require(filePath)` in try/catch to prevent a broken command from crashing the load loop; switched warning to `console.warn`.
+- **`src/events/guildCreate.ts` / `guildDelete.ts`** — Switched catch handlers from `console.log` to `console.error`.
+- **All command catch blocks** (`all.ts`, `disable.ts`, `ignoreuser.ts`, `unignoreuser.ts`, `clear.ts`) — Switched to `console.error`; wrapped error reply calls in their own try/catch.

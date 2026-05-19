@@ -38,11 +38,15 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
     } catch (err) {
-      console.log("Clear command err: ", err);
-      interaction.reply({
-        content: `There was an error deleting the messages.`,
-        flags: MessageFlags.Ephemeral,
-      });
+      console.error("Clear command err: ", err);
+      try {
+        await interaction.reply({
+          content: `There was an error deleting the messages.`,
+          flags: MessageFlags.Ephemeral,
+        });
+      } catch (replyError) {
+        console.error("Failed to send error reply to interaction:", replyError);
+      }
     }
   },
 };

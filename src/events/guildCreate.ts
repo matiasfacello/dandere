@@ -27,7 +27,7 @@ export const guildCreate = (bot: ClientType) => {
 
       console.log(`Join a guild: ${guild.name} <${guild.id}>`);
     } catch (err) {
-      console.log("Join a guild err: ", err);
+      console.error("Join a guild err: ", err);
     }
   });
 };

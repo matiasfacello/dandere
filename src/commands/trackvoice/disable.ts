@@ -34,8 +34,12 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.log("/trackvoicedisable err: ", err);
-      interaction.editReply("There was an error using this function.");
+      console.error("/trackvoicedisable err: ", err);
+      try {
+        await interaction.editReply("There was an error using this function.");
+      } catch (replyError) {
+        console.error("Failed to send error reply to interaction:", replyError);
+      }
     }
   },
 };

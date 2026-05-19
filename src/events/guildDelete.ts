@@ -17,7 +17,7 @@ export const guildDelete = (bot: ClientType) => {
 
       console.log(`Left a guild: ${guild.name} <${guild.id}>`);
     } catch (err) {
-      console.log("Left a guild err: ", err);
+      console.error("Left a guild err: ", err);
     }
   });
 };
