@@ -1,7 +1,7 @@
 import { dzz, eq } from "db/client";
 import { log, channelTracking, guild } from "db/schema";
 import { VoiceState, type TextChannel } from "discord.js";
-import { printDev } from "../helpers/functions";
+import { printDev, printError } from "../helpers/functions";
 
 /**
  * Event for tracking voice connections and disconnections.
@@ -32,7 +32,7 @@ export const trackVoice = (bot: ClientType) => {
 
       await twoChannelBehavior(bot, oldState, newState);
     } catch (err) {
-      console.error("voiceStateUpdate handler error:", err);
+      printError(false,"voiceStateUpdate handler error:", err);
     }
   });
 };
@@ -56,7 +56,7 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
       const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
       await channel.send(msg);
     } catch (err) {
-      console.error(`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+      printError(false,`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
     }
   }
 
@@ -109,7 +109,7 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
       const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
       await channel.send(msg);
     } catch (err) {
-      console.error(`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+      printError(false,`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
     }
   }
 

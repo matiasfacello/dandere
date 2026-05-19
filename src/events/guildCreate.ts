@@ -1,5 +1,6 @@
 import { dzz } from "db/client";
 import { guild as guildSchema, log } from "db/schema";
+import { printDev, printError } from "../helpers/functions";
 
 /**
  * Event for when bot joins a guild
@@ -25,9 +26,9 @@ export const guildCreate = (bot: ClientType) => {
         guildName: guild.name,
       });
 
-      console.log(`Join a guild: ${guild.name} <${guild.id}>`);
+      printDev(`Join a guild: ${guild.name} <${guild.id}>`);
     } catch (err) {
-      console.error("Join a guild err: ", err);
+      printError(false, "Join a guild err: ", err);
     }
   });
 };

@@ -2,14 +2,22 @@ import { config } from "dotenv";
 
 config();
 
-/**
- * Returns a console.log when in development mode.
- * @param toLog
- * @returns console.log
- */
-export const printDev = (toLog: any) => {
-  if (process.env.NODE_ENV === "development") {
-    console.log(toLog);
+const isDev = process.env.NODE_ENV !== "production";
+
+export const printDev = (...args: any[]) => {
+  if (isDev) {
+    console.log(...args);
   }
-  return;
+};
+
+export const printWarn = (force: boolean, ...args: any[]) => {
+  if (force || isDev) {
+    console.warn(...args);
+  }
+};
+
+export const printError = (force: boolean, ...args: any[]) => {
+  if (force || isDev) {
+    console.error(...args);
+  }
 };

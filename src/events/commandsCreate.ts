@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { Collection } from "discord.js";
+import { printWarn, printError } from "../helpers/functions";
 
 /**
  * Create commands for the bot
@@ -24,10 +25,10 @@ export const commandsCreate = (bot: ClientType) => {
         if ("data" in command && "execute" in command) {
           bot.commands.set(command.data.name, command);
         } else {
-          console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+          printWarn(false, `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
       } catch (err) {
-        console.error(`[ERROR] Failed to load command at ${filePath}:`, err);
+        printError(false, `[ERROR] Failed to load command at ${filePath}:`, err);
       }
     }
   }

@@ -18,7 +18,6 @@
   - `trackVoice.ts` L26: `"Cross guild are considered only connections"` is unclear — reword
   - `ignoreuser.ts` L24 and `unignoreuser.ts` L30: `"beign"` → `"being"`
 
-- **Inconsistent logging** — Some paths use `printDev()`, others use bare `console.log()`, others use `console.error()`. Standardize on a single logger or at least on `console.info` / `console.error` with consistent levels.
 
 ## Missing Features / Next Steps
 
@@ -55,3 +54,4 @@
 - **`src/events/commandsCreate.ts`** — Wrapped `require(filePath)` in try/catch to prevent a broken command from crashing the load loop; switched warning to `console.warn`.
 - **`src/events/guildCreate.ts` / `guildDelete.ts`** — Switched catch handlers from `console.log` to `console.error`.
 - **All command catch blocks** (`all.ts`, `disable.ts`, `ignoreuser.ts`, `unignoreuser.ts`, `clear.ts`) — Switched to `console.error`; wrapped error reply calls in their own try/catch.
+- **Inconsistent logging** — All logs now route through `printDev(...args)`, `printWarn(force, ...args)`, and `printError(force, ...args)` in `src/helpers/functions.ts`. Startup/script errors use `force: true`; runtime handler errors use `force: false`.

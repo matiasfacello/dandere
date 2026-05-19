@@ -1,5 +1,6 @@
 import { dzz } from "db/client";
 import { log } from "db/schema";
+import { printDev, printError } from "../helpers/functions";
 
 /**
  * Event for when bot lefts a guild
@@ -15,9 +16,9 @@ export const guildDelete = (bot: ClientType) => {
         guildName: guild.name,
       });
 
-      console.log(`Left a guild: ${guild.name} <${guild.id}>`);
+      printDev(`Left a guild: ${guild.name} <${guild.id}>`);
     } catch (err) {
-      console.error("Left a guild err: ", err);
+      printError(false, "Left a guild err: ", err);
     }
   });
 };

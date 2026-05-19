@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { guild, log } from "db/schema";
 import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
+import { printError } from "helpers/functions";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -48,11 +49,11 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.error("/trackvoice-unignoreuser err: ", err);
+      printError(false,"/trackvoice-unignoreuser err: ", err);
       try {
         await interaction.editReply(`There was an error using this function.`);
       } catch (replyError) {
-        console.error("Failed to send error reply to interaction:", replyError);
+        printError(false,"Failed to send error reply to interaction:", replyError);
       }
     }
   },

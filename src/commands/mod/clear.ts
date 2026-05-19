@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits, TextChannel } from "discord.js";
+import { printError } from "helpers/functions";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -38,14 +39,14 @@ module.exports = {
         flags: MessageFlags.Ephemeral,
       });
     } catch (err) {
-      console.error("Clear command err: ", err);
+      printError(false,"Clear command err: ", err);
       try {
         await interaction.reply({
           content: `There was an error deleting the messages.`,
           flags: MessageFlags.Ephemeral,
         });
       } catch (replyError) {
-        console.error("Failed to send error reply to interaction:", replyError);
+        printError(false,"Failed to send error reply to interaction:", replyError);
       }
     }
   },

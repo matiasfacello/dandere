@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
 import { guild, log } from "db/schema";
 import { ChannelType, ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits, TextChannel } from "discord.js";
+import { printError } from "helpers/functions";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -37,7 +38,7 @@ module.exports = {
             const logChannel = (await interaction.client.channels.fetch(upsert.logChannelId)) as TextChannel;
             await logChannel.send(`This channel has been selected to track all voice channels log.`);
           } catch (err) {
-            console.error(`Failed to send message to log channel ${upsert.logChannelId}:`, err);
+            printError(false,`Failed to send message to log channel ${upsert.logChannelId}:`, err);
           }
           await interaction.editReply(`Channel <#${upsert.logChannelId}> is now being used to track all voice channels. `);
         }
@@ -49,11 +50,11 @@ module.exports = {
         });
       }
     } catch (err) {
-      console.error("/trackvoiceall err: ", err);
+      printError(false,"/trackvoiceall err: ", err);
       try {
         await interaction.editReply(`There was an error using this function.`);
       } catch (replyError) {
-        console.error("Failed to send error reply to interaction:", replyError);
+        printError(false,"Failed to send error reply to interaction:", replyError);
       }
     }
   },
