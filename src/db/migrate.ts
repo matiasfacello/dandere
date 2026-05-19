@@ -3,7 +3,9 @@ import { migrate } from "drizzle-orm/postgres-js/migrator";
 
 const migration = async () => await migrate(dzz, { migrationsFolder: "drizzle" });
 
-migration().catch((err) => {
-  console.error("Migration failed:", err);
-  process.exit(1);
-});
+migration()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error("Migration failed:", err);
+    process.exit(1);
+  });
