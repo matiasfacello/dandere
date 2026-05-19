@@ -23,18 +23,12 @@ module.exports = {
 
     const amount = interaction.options.getInteger("amount");
 
-    if (amount && isNaN(amount)) {
-      await interaction.reply({
-        content: "Please insert a valid amount between 1 to 100.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-
     if (amount && (amount > 100 || amount < 1)) {
       await interaction.reply({
         content: "Please insert a valid amount between 1 to 100.",
         flags: MessageFlags.Ephemeral,
       });
+      return;
     }
 
     try {

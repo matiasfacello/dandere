@@ -1,17 +1,5 @@
 # TODO
 
-## Bugs
-
-- **`src/commands/mod/clear.ts`** — `isNaN(amount)` guard is dead code: `getInteger()` returns a `number`, never `NaN`. Remove the redundant check on lines 26–31 and keep only the range validation.
-
-- **`src/events/trackVoice.ts` ~L75–82** — Early-return logic is inverted. The conditions `if (oldState.mute !== newState.mute) return` etc. cause the function to bail out when a mute/deaf/camera toggle occurs, which is the desired case to track. Review the intent: if the goal is to skip _non-channel_ state changes, the returns need to be wrapped in an "and channel didn't change" guard.
-
-- **`src/db/client.ts` L10** — `max: 1` caps the connection pool to a single connection. Under concurrent voice-state events and slash commands this becomes a serial bottleneck. Raise to a sane default (e.g. 10) or remove the override to use the driver default.
-
-- **`src/commands/trackvoice/all.ts` L21** and **`src/commands/trackvoice/disable.ts` L24** — `.returning()` returns an array; array-destructured result (e.g. `[upsert]`) is `undefined` if the operation matches 0 rows. Add a guard before accessing `.logChannelId` / `.enabled` on those variables.
-
-- **`.env.example` `DZZ_PORT`** — Example shows `3306` (MySQL default). The bot uses PostgreSQL; default port should be `5432`.
-
 ## Missing Error Handling
 
 - **`src/Bot.ts`** — `bot.login(process.env.BOT_TOKEN)` has no `.catch()`. An invalid token produces a confusing unhandled rejection at startup. Add explicit error handling and log the cause.
@@ -49,6 +37,7 @@
 - **`src/helpers/functions.ts`** — `printDev()` has an explicit `return;` at the end of a `void` function. Remove it.
 
 - **Typos in comments:**
+
   - `trackVoice.ts` L14: `"Joiningconnection"` → `"Joining connection"`
   - `trackVoice.ts` L26: `"Cross guild are considered only connections"` is unclear — reword
   - `ignoreuser.ts` L24 and `unignoreuser.ts` L30: `"beign"` → `"being"`
@@ -74,3 +63,11 @@
 - **Rate limiting for commands** — There is no per-user or per-guild cooldown on slash commands. Add a simple in-memory cooldown map to prevent command spam from triggering Discord rate limits.
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
+
+## Completed
+
+- **`src/commands/mod/clear.ts`** — Removed dead `isNaN(amount)` guard; added missing `return` after range-check reply.
+- **`src/events/trackVoice.ts`** — Replaced inverted mute/deaf/video early-returns with a single guard that only skips when neither channel nor streaming changed.
+- **`src/db/client.ts`** — Raised connection pool from `max: 1` to `max: 10`.
+- **`src/commands/trackvoice/disable.ts`** — Added null guard on `trackUpdate` before accessing `.trackAll`.
+- **`.env.example`** — Fixed `DZZ_PORT` from `3306` (MySQL) to `5432` (PostgreSQL).

@@ -7,7 +7,7 @@ config();
 
 const connectionString = process.env.DATABASE_URL;
 
-const sql = postgres(connectionString, { max: 1 });
+const sql = postgres(connectionString, { max: 10 });
 const dzz = drizzle({ client: sql });
 
 export { dzz, eq };

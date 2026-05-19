@@ -72,16 +72,13 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
   if (!oldState.channel || !newState.channel) return;
   if (!oldState.member || !newState.member) return;
 
-  if (oldState.mute !== newState.mute) return;
-  if (oldState.serverMute !== newState.serverMute) return;
+  const channelChanged = oldState.channel.id !== newState.channel.id;
+  const streamingChanged = oldState.streaming !== newState.streaming;
 
-  if (oldState.deaf !== newState.deaf) return;
-  if (oldState.serverDeaf !== newState.serverDeaf) return;
+  // Skip mute/deaf/camera-only changes — only log channel moves and streaming events
+  if (!channelChanged && !streamingChanged) return;
 
-  if (oldState.selfVideo !== newState.selfVideo) return;
-
-  // User started or stopped streaming
-  if (oldState.streaming !== newState.streaming) {
+  if (streamingChanged) {
     actionNumber = newState.streaming ? 104 : 105;
   }
 

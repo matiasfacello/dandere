@@ -23,7 +23,7 @@ module.exports = {
 
         const [trackUpdate] = await dzz.update(guild).set({ trackAll: false }).where(eq(guild.guildId, guildId)).returning();
 
-        if (!trackUpdate.trackAll) {
+        if (trackUpdate && !trackUpdate.trackAll) {
           await interaction.editReply(`Voice channels are not longer being tracked.`);
         }
 
