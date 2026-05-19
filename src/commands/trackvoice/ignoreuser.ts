@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { dzz, eq } from "db/client";
-import { guild, log } from "db/schema";
-import { ChatInputCommandInteraction, Client, MessageFlags, PermissionFlagsBits, TextChannel } from "discord.js";
+import { addIgnoredUser } from "db/ignoreUsers";
+import { dzz } from "db/client";
+import { log } from "db/schema";
+import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
 import { printError } from "helpers/functions";
 
 module.exports = {
@@ -23,30 +24,19 @@ module.exports = {
           return;
         }
 
-        const [get] = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
+        const result = await addIgnoredUser(guildId, user.id);
 
-        let ignoreArr: string[] = [];
-
-        if (get && get.ignoreUsers) {
-          if (get.ignoreUsers.includes(user.id)) {
-            await interaction.editReply(`User ${user} is already being ignored.`);
-            return;
-          }
-
-          ignoreArr = [...get.ignoreUsers];
+        if (result === "already_ignored") {
+          await interaction.editReply(`User ${user} is already being ignored.`);
+          return;
         }
 
-        ignoreArr.push(user.id);
-
-        const [update] = await dzz
-          .update(guild)
-          .set({ ignoreUsers: ignoreArr })
-          .where(eq(guild.guildId, guildId))
-          .returning();
-
-        if (update) {
-          await interaction.editReply(`User ${user} is now being ignored.`);
+        if (result === "not_found") {
+          await interaction.editReply("Guild not found in the database.");
+          return;
         }
+
+        await interaction.editReply(`User ${user} is now being ignored.`);
 
         await dzz.insert(log).values({
           action: 211,
@@ -57,11 +47,11 @@ module.exports = {
         });
       }
     } catch (err) {
-      printError(false,"/trackvoice-ignoreuser err: ", err);
+      printError(false, "/trackvoice-ignoreuser err: ", err);
       try {
         await interaction.editReply(`There was an error using this function.`);
       } catch (replyError) {
-        printError(false,"Failed to send error reply to interaction:", replyError);
+        printError(false, "Failed to send error reply to interaction:", replyError);
       }
     }
   },

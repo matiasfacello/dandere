@@ -1,29 +1,8 @@
 # TODO
 
-## Code Quality
-
-- **`src/commands/trackvoice/ignoreuser.ts` + `unignoreuser.ts`** — The comma-split / filter / join manipulation of `ignoreUsers` is duplicated across both files. Extract `addIgnoredUser(guildId, userId)` and `removeIgnoredUser(guildId, userId)` helpers into `src/helpers/` (or `src/db/`).
-
-- **`src/types/ClientType.d.ts`** — `commands` is typed as `Collection<string, any>`. Define a `Command` interface (`{ data: SlashCommandBuilder; execute: (interaction: ChatInputCommandInteraction) => Promise<void> }`) and use it here for end-to-end type safety.
-
-- **`src/events/commandsCreate.ts` L18`** — Filters for `.ts` extension, which breaks if the project is ever compiled to `.js` before running. Either keep `tsx` as the only runtime target and document this, or use a runtime check that handles both extensions.
-
-- **`src/db/schema.ts` `channelTracking`** — There is both a unique index and a regular index on `guildId`. The regular index is redundant; remove it.
-
-- **`src/helpers/functions.ts`** — `printDev()` has an explicit `return;` at the end of a `void` function. Remove it.
-
-- **Typos in comments:**
-
-  - `trackVoice.ts` L14: `"Joiningconnection"` → `"Joining connection"`
-  - `trackVoice.ts` L26: `"Cross guild are considered only connections"` is unclear — reword
-  - `ignoreuser.ts` L24 and `unignoreuser.ts` L30: `"beign"` → `"being"`
-
-
 ## Missing Features / Next Steps
 
 - **Graceful shutdown** — No `SIGTERM`/`SIGINT` handlers. Add handlers to close the database pool and destroy the Discord client cleanly before the process exits. This is especially important in the Docker/CapRover deployment.
-
-- **Command type safety** — Implement the `Command` interface (see Code Quality above) so `commands.get()` calls are fully typed instead of returning `any`.
 
 - **Health/status command** — A simple `/status` or `/ping` slash command that returns DB connectivity, uptime, and guild count is useful for self-hosting and debugging.
 
@@ -35,7 +14,24 @@
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
+## Pending DB Changes
+
+_Batch these together and run `dzz-generate` + `dzz-migrate` once there are enough to justify a migration._
+
+- **`src/db/schema.ts` `channelTracking`** — Remove redundant `index("voicetrack_guildId_idx")`; the unique index already covers the column.
+
+## Pending Dependency Updates
+
+_Do a full dependency update pass in one go._
+
+- **`drizzle-kit`** — pinned to `0.18.1` but `drizzle-orm` is `0.44.2`; `drizzle.config.ts` uses `dialect` which doesn't exist in the old kit's `Config` type. Upgrade `drizzle-kit` to a version compatible with `drizzle-orm@0.44` and verify the config shape.
+
 ## Completed
+
+- **`src/db/ignoreUsers.ts`** — Extracted `addIgnoredUser(guildId, userId)` and `removeIgnoredUser(guildId, userId)` helpers; updated `ignoreuser.ts` and `unignoreuser.ts` to use them.
+- **`src/types/ClientType.d.ts`** — Defined `Command` interface (`{ data: SlashCommandBuilder; execute: (interaction: ChatInputCommandInteraction) => Promise<void> }`); `commands` collection now typed as `Collection<string, Command>`.
+- **`src/events/commandsCreate.ts`** — Added comment documenting that `.ts` filter is intentional since `tsx` is the only runtime.
+- **`src/events/trackVoice.ts`** — Rewrote unclear comment on cross-guild transitions.
 
 - **`Dockerfile`** — Removed `ARG`/`ENV` lines for `BOT_TOKEN`, `APP_ID`, `DATABASE_URL`; secrets are now injected at runtime by CapRover.
 - **`src/Bot.ts`** — Added startup validation: checks all required env vars are non-empty and calls `process.exit(1)` with a clear message if any are missing.

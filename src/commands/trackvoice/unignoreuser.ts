@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { dzz, eq } from "db/client";
-import { guild, log } from "db/schema";
+import { removeIgnoredUser } from "db/ignoreUsers";
+import { dzz } from "db/client";
+import { log } from "db/schema";
 import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
 import { printError } from "helpers/functions";
 
@@ -18,27 +19,19 @@ module.exports = {
       const guildId = interaction.guildId;
 
       if (user && guildId) {
-        const [get] = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
+        const result = await removeIgnoredUser(guildId, user.id);
 
-        // Check if no user is being ignored
-        if (!get || !get.ignoreUsers) {
-          await interaction.editReply(`There are no users currently ignored.`);
+        if (result === "no_users") {
+          await interaction.editReply("There are no users currently ignored.");
           return;
         }
 
-        if (!get.ignoreUsers.includes(user.id)) {
+        if (result === "not_ignored") {
           await interaction.editReply(`User ${user} is not being ignored.`);
           return;
         }
 
-        const ignoreArr = get.ignoreUsers.filter((str) => str !== user.id);
-        const usersToIgnore = ignoreArr.length > 0 ? ignoreArr : null;
-
-        const [update] = await dzz.update(guild).set({ ignoreUsers: usersToIgnore }).where(eq(guild.guildId, guildId)).returning();
-
-        if (update) {
-          await interaction.editReply(`User ${user} is not being ignored anymore. `);
-        }
+        await interaction.editReply(`User ${user} is not being ignored anymore.`);
 
         await dzz.insert(log).values({
           action: 212,
@@ -49,11 +42,11 @@ module.exports = {
         });
       }
     } catch (err) {
-      printError(false,"/trackvoice-unignoreuser err: ", err);
+      printError(false, "/trackvoice-unignoreuser err: ", err);
       try {
         await interaction.editReply(`There was an error using this function.`);
       } catch (replyError) {
-        printError(false,"Failed to send error reply to interaction:", replyError);
+        printError(false, "Failed to send error reply to interaction:", replyError);
       }
     }
   },

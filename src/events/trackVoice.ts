@@ -24,7 +24,7 @@ export const trackVoice = (bot: ClientType) => {
         return;
       }
 
-      // Cross guild are considered only connections
+      // Cross-guild transitions are treated as a new connection in the destination guild
       if (oldState.guild.id !== newState.guild.id) {
         await oneChannelBehavior(bot, newState, 101);
         return;
