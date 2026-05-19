@@ -1,15 +1,5 @@
 # TODO
 
-## Security
-
-- **`Dockerfile` L13–18** — `BOT_TOKEN` and `DATABASE_URL` are passed as build `ARG`s and promoted to `ENV`. They end up in the image build history and can be extracted from any image layer. Pass secrets at container runtime via `-e` or Docker secrets, not at build time.
-
-- **`src/db/schema.ts` `ignoreUsers` column** — Stored as unbounded `varchar`. A malicious or buggy input could write arbitrarily large strings. Use a PostgreSQL `text[]` array type (which also removes the error-prone comma-split parsing everywhere).
-
-- **`src/commands/trackvoice/ignoreuser.ts`** — No format validation on the Discord user ID before storing it. Validate that the value is an 18–20 digit numeric string before writing to the database.
-
-- **`src/types/env.d.ts`** — Environment variables are declared as always present but are never validated at startup. Add a startup check that asserts all required vars are non-empty and `process.exit(1)` with a clear message if any are missing.
-
 ## Code Quality
 
 - **`src/commands/trackvoice/ignoreuser.ts` + `unignoreuser.ts`** — The comma-split / filter / join manipulation of `ignoreUsers` is duplicated across both files. Extract `addIgnoredUser(guildId, userId)` and `removeIgnoredUser(guildId, userId)` helpers into `src/helpers/` (or `src/db/`).
@@ -34,10 +24,6 @@
 
 - **Graceful shutdown** — No `SIGTERM`/`SIGINT` handlers. Add handlers to close the database pool and destroy the Discord client cleanly before the process exits. This is especially important in the Docker/CapRover deployment.
 
-- **Startup env validation** — Validate all required environment variables on startup (before connecting to Discord or the DB) and exit with a descriptive message if any are missing.
-
-- **`ignoreUsers` migration to array type** — Replace the comma-separated `varchar` with a PostgreSQL `text[]` column. This eliminates the string-split bugs and makes querying/indexing cleaner.
-
 - **Command type safety** — Implement the `Command` interface (see Code Quality above) so `commands.get()` calls are fully typed instead of returning `any`.
 
 - **Health/status command** — A simple `/status` or `/ping` slash command that returns DB connectivity, uptime, and guild count is useful for self-hosting and debugging.
@@ -51,6 +37,11 @@
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
 ## Completed
+
+- **`Dockerfile`** — Removed `ARG`/`ENV` lines for `BOT_TOKEN`, `APP_ID`, `DATABASE_URL`; secrets are now injected at runtime by CapRover.
+- **`src/Bot.ts`** — Added startup validation: checks all required env vars are non-empty and calls `process.exit(1)` with a clear message if any are missing.
+- **`src/commands/trackvoice/ignoreuser.ts`** — Added regex guard (`/^\d{17,20}$/`) on `user.id` before writing to the database.
+- **`src/db/schema.ts` `ignoreUsers`** — Changed from `varchar` to `text[]`; updated `ignoreuser.ts` and `unignoreuser.ts` to use array operations. Migration applied to live DB.
 
 - **`src/commands/mod/clear.ts`** — Removed dead `isNaN(amount)` guard; added missing `return` after range-check reply.
 - **`src/events/trackVoice.ts`** — Replaced inverted mute/deaf/video early-returns with a single guard that only skips when neither channel nor streaming changed.

@@ -25,19 +25,13 @@ module.exports = {
           return;
         }
 
-        let ignoreArr: string[] = [];
-
-        // Check if user is beign ignored make new list of ignored users
-        if (get && get.ignoreUsers) {
-          if (!get.ignoreUsers.split(",").includes(user.id)) {
-            await interaction.editReply(`User ${user} is not being ignored.`);
-            return;
-          }
-
-          ignoreArr = get.ignoreUsers.split(",").filter((str) => str !== user.id);
+        if (!get.ignoreUsers.includes(user.id)) {
+          await interaction.editReply(`User ${user} is not being ignored.`);
+          return;
         }
 
-        const usersToIgnore = ignoreArr.length > 0 ? ignoreArr.join(",") : null;
+        const ignoreArr = get.ignoreUsers.filter((str) => str !== user.id);
+        const usersToIgnore = ignoreArr.length > 0 ? ignoreArr : null;
 
         const [update] = await dzz.update(guild).set({ ignoreUsers: usersToIgnore }).where(eq(guild.guildId, guildId)).returning();
 

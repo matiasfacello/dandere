@@ -8,7 +8,7 @@ export const guild = pgTable(
     guildId: varchar("guildId").notNull(),
     trackAll: boolean("trackAll").default(false).notNull(),
     logChannelId: varchar("logChannelId"),
-    ignoreUsers: varchar("ignoreUsers"),
+    ignoreUsers: text("ignoreUsers").array(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (table) => [uniqueIndex("guild_guildId_key").on(table.guildId)]

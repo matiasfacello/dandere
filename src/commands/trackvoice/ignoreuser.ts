@@ -17,28 +17,29 @@ module.exports = {
       const guildId = interaction.guildId;
 
       if (user && guildId) {
+        if (!/^\d{17,20}$/.test(user.id)) {
+          await interaction.editReply("Invalid user ID format.");
+          return;
+        }
+
         const [get] = await dzz.select().from(guild).where(eq(guild.guildId, guildId));
 
         let ignoreArr: string[] = [];
 
-        // Check if user is beign already tracked and push other ignores to the list
         if (get && get.ignoreUsers) {
-          if (get.ignoreUsers.split(",").includes(user.id)) {
+          if (get.ignoreUsers.includes(user.id)) {
             await interaction.editReply(`User ${user} is already being ignored.`);
             return;
           }
 
-          get.ignoreUsers.split(",").map((str: string) => {
-            ignoreArr.push(str);
-          });
+          ignoreArr = [...get.ignoreUsers];
         }
 
-        // Add user to ignore list
-        ignoreArr.push(user.id as string);
+        ignoreArr.push(user.id);
 
         const [update] = await dzz
           .update(guild)
-          .set({ ignoreUsers: ignoreArr.join(",") })
+          .set({ ignoreUsers: ignoreArr })
           .where(eq(guild.guildId, guildId))
           .returning();
 
