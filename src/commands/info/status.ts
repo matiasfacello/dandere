@@ -20,7 +20,7 @@ module.exports = {
 
       const ping = interaction.client.ws.ping;
 
-      await interaction.editReply(`**Bot Status**\nBot: Online\nPing: ${ping}ms\nDatabase: ${dbStatus}`);
+      await interaction.editReply(`Bot: Online\nDatabase: ${dbStatus}\nPing: ${ping}ms`);
     } catch (err) {
       printError(false, "/status err: ", err);
       try {
