@@ -9,18 +9,18 @@ Dandere is a Discord bot built with TypeScript that tracks voice channel activit
 ## Commands
 
 ```bash
-npm run start          # Run bot with tsx watch (hot reload — use for development)
-npm run dev            # Alias for start
-npm run commands       # Delete and redeploy all slash commands to Discord
-npm run dzz-generate   # Generate Drizzle migration files from schema changes
-npm run dzz-migrate    # Run pending database migrations
-npm run dzz-studio     # Open Drizzle Studio GUI for the database
-npm run dzz-introspect # Introspect existing PostgreSQL schema
+pnpm start          # Run bot with tsx watch (hot reload — use for development)
+pnpm dev            # Alias for start
+pnpm commands       # Delete and redeploy all slash commands to Discord
+pnpm dzz-generate   # Generate Drizzle migration files from schema changes
+pnpm dzz-migrate    # Run pending database migrations
+pnpm dzz-studio     # Open Drizzle Studio GUI for the database
+pnpm dzz-introspect # Introspect existing PostgreSQL schema
 ```
 
 There is no separate build step — TypeScript runs directly via `tsx`. No test suite exists.
 
-To lint: `npx eslint src/` — ESLint is configured but has no npm script.
+To lint: `pnpm dlx eslint src/` — ESLint is configured but has no script alias.
 
 ## Architecture
 
