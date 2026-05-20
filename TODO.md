@@ -2,15 +2,15 @@
 
 ## Missing Features / Next Steps
 
-- **Graceful shutdown** — No `SIGTERM`/`SIGINT` handlers. Add handlers to close the database pool and destroy the Discord client cleanly before the process exits. This is especially important in the Docker/CapRover deployment.
-
-- **Health/status command** — A simple `/status` or `/ping` slash command that returns DB connectivity, uptime, and guild count is useful for self-hosting and debugging.
-
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
 
-- **Dockerfile production build** — The current image runs `npm start` which uses `tsx watch` (development mode). For production, add a compile step (`tsc`) and run the compiled output, or at minimum use `tsx` without `--watch`.
-
 - **Rate limiting for commands** — There is no per-user or per-guild cooldown on slash commands. Add a simple in-memory cooldown map to prevent command spam from triggering Discord rate limits.
+
+- **Auto-deploy commands on startup** — Instead of a manual `npm run commands` step, compare a hash of the local serialized command definitions against what Discord currently has registered and only call `PUT applicationCommands` when they differ. Discord rate-limits global command updates to 200/day per app, so change-detection is necessary before enabling this.
+
+- **Remove `DeleteCommands.ts`** — `PUT applicationCommands` with a body already replaces all commands atomically; the delete step is redundant. Remove the script and drop the delete step from the `commands` npm script.
+
+- **Replace `require()` with dynamic `import()` in command loading** — `src/events/commandsCreate.ts` and `src/scripts/DeployCommands.ts` use `require(filePath)` on `.ts` files. Switch to `await import(filePath)` for idiomatic ESM and forward-compatibility if the project ever moves off `tsx`.
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
@@ -27,6 +27,10 @@ _Do a full dependency update pass in one go._
 - **`drizzle-kit`** — pinned to `0.18.1` but `drizzle-orm` is `0.44.2`; `drizzle.config.ts` uses `dialect` which doesn't exist in the old kit's `Config` type. Upgrade `drizzle-kit` to a version compatible with `drizzle-orm@0.44` and verify the config shape.
 
 ## Completed
+
+- **Graceful shutdown** — Added `SIGTERM`/`SIGINT` handlers in `src/Bot.ts`; exported `sql` pool from `db/client.ts` so both the Discord client and DB connection close cleanly on shutdown.
+- **`/status` command** — Added `src/commands/info/status.ts`; Administrator-only, ephemeral reply with bot online status, WebSocket ping, and DB connectivity.
+- **Dockerfile production build** — Added `prod` script (`tsx src/Bot.ts`, no `--watch`); updated `CMD` to use it instead of `npm start`.
 
 - **`src/db/ignoreUsers.ts`** — Extracted `addIgnoredUser(guildId, userId)` and `removeIgnoredUser(guildId, userId)` helpers; updated `ignoreuser.ts` and `unignoreuser.ts` to use them.
 - **`src/types/ClientType.d.ts`** — Defined `Command` interface (`{ data: SlashCommandBuilder; execute: (interaction: ChatInputCommandInteraction) => Promise<void> }`); `commands` collection now typed as `Collection<string, Command>`.

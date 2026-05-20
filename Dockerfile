@@ -10,4 +10,4 @@ RUN npm ci
 
 COPY . /usr/src/bot
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "prod"]

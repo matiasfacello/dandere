@@ -10,4 +10,4 @@ const connectionString = process.env.DATABASE_URL;
 const sql = postgres(connectionString, { max: 10 });
 const dzz = drizzle({ client: sql });
 
-export { dzz, eq };
+export { dzz, eq, sql };
