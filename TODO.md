@@ -4,7 +4,6 @@
 
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
 
-- **Rate limiting for commands** — There is no per-user or per-guild cooldown on slash commands. Add a simple in-memory cooldown map to prevent command spam from triggering Discord rate limits.
 
 - **Auto-deploy commands on startup** — Instead of a manual `npm run commands` step, compare a hash of the local serialized command definitions against what Discord currently has registered and only call `PUT applicationCommands` when they differ. Discord rate-limits global command updates to 200/day per app, so change-detection is necessary before enabling this.
 
@@ -28,6 +27,7 @@ _Do a full dependency update pass in one go._
 
 ## Completed
 
+- **Rate limiting for commands** — Added `src/helpers/rateLimiter.ts` with sliding-window rate limits (2 cmd/s per `guildId:userId`, 10 cmd/s per guild); checked in `commandsEvent.ts` before dispatch, replies ephemerally with remaining wait time. Cleanup scheduler supports a fixed clock hour (`RATE_LIMIT_CLEANUP_HOUR`) or an interval (`RATE_LIMIT_CLEANUP_HOURS`, default 24 h).
 - **Graceful shutdown** — Added `SIGTERM`/`SIGINT` handlers in `src/Bot.ts`; exported `sql` pool from `db/client.ts` so both the Discord client and DB connection close cleanly on shutdown.
 - **`/status` command** — Added `src/commands/info/status.ts`; Administrator-only, ephemeral reply with bot online status, WebSocket ping, and DB connectivity.
 - **Dockerfile production build** — Added `prod` script (`tsx src/Bot.ts`, no `--watch`); updated `CMD` to use it instead of `npm start`.

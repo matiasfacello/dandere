@@ -10,6 +10,8 @@ declare global {
       DZZ_PASSWORD?: string;
       DZZ_DATABASE?: string;
       DATABASE_URL: string;
+      RATE_LIMIT_CLEANUP_HOURS?: string;
+      RATE_LIMIT_CLEANUP_HOUR?: string;
     }
   }
 }

@@ -39,7 +39,10 @@ The schema has 5 tables: `guild`, `channelTracking`, `log`, `premiumPlans`, `pre
 
 **Types (`src/types/`):** `ClientType.d.ts` extends the discord.js `Client` with a `commands` Collection. `env.d.ts` declares all required environment variables — add new ones here.
 
-**Helpers (`src/helpers/functions.ts`):** `printDev()` logs only when `NODE_ENV !== "production"`.
+**Helpers (`src/helpers/functions.ts`):** Never use `console.log`, `console.warn`, or `console.error` directly. Always use one of these helpers:
+- `printDev(...args)` — development-only logs (suppressed in production)
+- `printWarn(force, ...args)` — warnings; pass `true` to force-show in production, `false` for dev-only
+- `printError(force, ...args)` — errors; same `force` flag as above
 
 ## Environment Variables
 
