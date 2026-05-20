@@ -6,7 +6,7 @@ import { printDev, printError } from "./helpers/functions";
 
 config();
 
-const REQUIRED_ENV_VARS = ["BOT_TOKEN", "APP_ID", "DATABASE_URL", "DZZ_HOST", "DZZ_PORT", "DZZ_USER", "DZZ_PASSWORD", "DZZ_DATABASE"];
+const REQUIRED_ENV_VARS = ["BOT_TOKEN", "APP_ID", "DATABASE_URL"];
 for (const key of REQUIRED_ENV_VARS) {
   if (!process.env[key]) {
     printError(true, `Missing required environment variable: ${key}`);
@@ -34,8 +34,18 @@ const shutdown = async (signal: string) => {
   process.exit(0);
 };
 
-process.on("SIGTERM", () => { shutdown("SIGTERM").catch((err) => { printError(true, "Error during shutdown:", err); process.exit(1); }); });
-process.on("SIGINT", () => { shutdown("SIGINT").catch((err) => { printError(true, "Error during shutdown:", err); process.exit(1); }); });
+process.on("SIGTERM", () => {
+  shutdown("SIGTERM").catch((err) => {
+    printError(true, "Error during shutdown:", err);
+    process.exit(1);
+  });
+});
+process.on("SIGINT", () => {
+  shutdown("SIGINT").catch((err) => {
+    printError(true, "Error during shutdown:", err);
+    process.exit(1);
+  });
+});
 
 commandsCreate(bot);
 commandsEvent(bot);
