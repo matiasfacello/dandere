@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import { sql } from "./db/client";
 import { commandsCreate, commandsEvent, guildCreate, guildDelete, trackVoice } from "./events/index";
 import { printDev, printError } from "./helpers/functions";
+import { scheduleLogCleanup } from "./helpers/logCleanup";
 
 config();
 
@@ -54,3 +55,5 @@ guildCreate(bot);
 guildDelete(bot);
 
 trackVoice(bot);
+
+scheduleLogCleanup();

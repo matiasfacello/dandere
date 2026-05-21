@@ -13,13 +13,30 @@
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
+- **`/trackvoice-disable` doesn't work** — `src/events/trackVoice.ts` fetches the guild row but never checks `getVoiceTrack.trackAll`. The flag is written by the command but never read, so tracking continues after disabling.
+
+- **Remove unused `GuildPresences` intent** — `src/Bot.ts:18` requests `GatewayIntentBits.GuildPresences` (a privileged intent) but it is not used anywhere. This will block scaling past 100 servers without Discord verification.
+
+- **Rate limiter cleanup logs always print in production** — `src/helpers/rateLimiter.ts:15,31` call `printWarn(true, ...)` for the cleanup start/done messages. Should be `printDev(...)` since this is noise, not a warning.
+
+
+## Premium Features
+
+_Free tier baseline is defined in `src/helpers/logCleanup.ts`. Premium upgrades slot in by reading per-guild overrides from the DB._
+
+- **Extended log retention** — Free tier retains 30 days (`FREE_TIER_RETENTION_DAYS`). Premium guilds get a longer window. Requires adding `logRetentionDays` integer (nullable) to the `guild` table (see Pending DB Changes), then changing the cleanup loop to read `retentionDays ?? FREE_TIER_RETENTION_DAYS` per guild.
+
 ## Pending DB Changes
 
 _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enough to justify a migration._
 
+- **`src/db/schema.ts` `guild`** — Add `logRetentionDays: integer("logRetentionDays")` (nullable). Null means free tier; premium guilds get a value set here. Required before the log cleanup can respect per-guild retention windows.
+
 - **`src/db/schema.ts` `channelTracking`** — Remove redundant `index("voicetrack_guildId_idx")`; the unique index already covers the column.
 
 ## Completed
+
+- **Log retention cleanup** — Added `src/helpers/logCleanup.ts`; runs on startup then every 24 h. Deletes log rows older than 30 days per guild (`FREE_TIER_RETENTION_DAYS`). Structured per-guild so extending to premium retention later requires only adding the `logRetentionDays` column and a one-line change in the cleanup loop.
 
 - **Full dependency update pass** — bumped all deps: discord.js 14.20→14.26.4, drizzle-orm 0.44→0.45, drizzle-kit 0.18→0.31 (now compatible with drizzle-orm and the `dialect`/`url` config shape), typescript 5.8→6.0, eslint 9→10, tsx 4.20→4.22, and all other dev deps.
 - **`DATABASE_URL` consolidation** — removed individual `DZZ_HOST/PORT/USER/PASSWORD/DATABASE` env vars from `.env.example`, `drizzle.config.ts`, and `src/types/env.d.ts`; both the bot runtime and Drizzle Kit now share the single `DATABASE_URL` connection string.
