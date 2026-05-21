@@ -15,7 +15,7 @@ export const commandsEvent = (bot: ClientType) => {
     const command = client.commands.get(interaction.commandName);
 
     if (!command) {
-      printError(false,`No command matching ${interaction.commandName} was found.`);
+      printError(true,`No command matching ${interaction.commandName} was found.`);
       return;
     }
 
@@ -29,7 +29,7 @@ export const commandsEvent = (bot: ClientType) => {
       try {
         await interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
       } catch (replyError) {
-        printError(false, "Failed to send rate limit reply:", replyError);
+        printError(true, "Failed to send rate limit reply:", replyError);
       }
       return;
     }
@@ -37,7 +37,7 @@ export const commandsEvent = (bot: ClientType) => {
     try {
       await command.execute(interaction);
     } catch (error) {
-      printError(false,error);
+      printError(true,error);
       try {
         if (interaction.replied || interaction.deferred) {
           await interaction.followUp({
@@ -51,7 +51,7 @@ export const commandsEvent = (bot: ClientType) => {
           });
         }
       } catch (replyError) {
-        printError(false,"Failed to send error reply to interaction:", replyError);
+        printError(true,"Failed to send error reply to interaction:", replyError);
       }
     }
   });

@@ -34,19 +34,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   try {
     const bulkDel = await (interaction.channel as TextChannel).bulkDelete(amount!);
-    interaction.reply({
+    await interaction.reply({
       content: `Deleted ${bulkDel.size} messages.`,
       flags: MessageFlags.Ephemeral,
     });
   } catch (err) {
-    printError(false, "Clear command err: ", err);
+    printError(true, "Clear command err: ", err);
     try {
       await interaction.reply({
         content: `There was an error deleting the messages.`,
         flags: MessageFlags.Ephemeral,
       });
     } catch (replyError) {
-      printError(false, "Failed to send error reply to interaction:", replyError);
+      printError(true, "Failed to send error reply to interaction:", replyError);
     }
   }
 }

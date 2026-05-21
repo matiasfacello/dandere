@@ -22,11 +22,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         return;
       }
 
-      const [trackUpdate] = await dzz.update(guild).set({ trackAll: false }).where(eq(guild.guildId, guildId)).returning();
-
-      if (trackUpdate && !trackUpdate.trackAll) {
-        await interaction.editReply(`Voice channels are not longer being tracked.`);
-      }
+      await dzz.update(guild).set({ trackAll: false }).where(eq(guild.guildId, guildId));
+      await interaction.editReply(`Voice channels are not longer being tracked.`);
 
       await dzz.insert(log).values({
         action: 304,
@@ -35,11 +32,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       });
     }
   } catch (err) {
-    printError(false, "/trackvoicedisable err: ", err);
+    printError(true, "/trackvoicedisable err: ", err);
     try {
       await interaction.editReply("There was an error using this function.");
     } catch (replyError) {
-      printError(false, "Failed to send error reply to interaction:", replyError);
+      printError(true, "Failed to send error reply to interaction:", replyError);
     }
   }
 }

@@ -42,11 +42,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       });
     }
   } catch (err) {
-    printError(false, "/trackvoice-unignoreuser err: ", err);
+    printError(true, "/trackvoice-unignoreuser err: ", err);
     try {
       await interaction.editReply(`There was an error using this function.`);
     } catch (replyError) {
-      printError(false, "Failed to send error reply to interaction:", replyError);
+      printError(true, "Failed to send error reply to interaction:", replyError);
     }
   }
 }

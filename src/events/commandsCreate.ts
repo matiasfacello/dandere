@@ -23,7 +23,7 @@ export const commandsCreate = async (bot: ClientType) => {
           printWarn(false, `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
         }
       } catch (err) {
-        printError(false, `[ERROR] Failed to load command at ${filePath}:`, err);
+        printError(true, `[ERROR] Failed to load command at ${filePath}:`, err);
       }
     }
   }

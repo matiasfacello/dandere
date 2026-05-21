@@ -22,11 +22,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     await interaction.editReply(`Bot: Online\nDatabase: ${dbStatus}\nPing: ${ping}ms`);
   } catch (err) {
-    printError(false, "/status err: ", err);
+    printError(true, "/status err: ", err);
     try {
       await interaction.editReply(`There was an error fetching status.`);
     } catch (replyError) {
-      printError(false, "Failed to send error reply to interaction:", replyError);
+      printError(true, "Failed to send error reply to interaction:", replyError);
     }
   }
 }

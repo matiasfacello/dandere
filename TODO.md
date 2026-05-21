@@ -57,7 +57,7 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 - **`src/commands/mod/clear.ts`** — Removed dead `isNaN(amount)` guard; added missing `return` after range-check reply.
 - **`src/events/trackVoice.ts`** — Replaced inverted mute/deaf/video early-returns with a single guard that only skips when neither channel nor streaming changed.
 - **`src/db/client.ts`** — Raised connection pool from `max: 1` to `max: 10`.
-- **`src/commands/trackvoice/disable.ts`** — Added null guard on `trackUpdate` before accessing `.trackAll`.
+- **`src/commands/trackvoice/disable.ts`** — Removed redundant `trackUpdate` null guard and `.returning()`; existence is already confirmed by the `existingTrack.length === 0` check above, so the update always replies unconditionally.
 - **`.env.example`** — Fixed `DZZ_PORT` from `3306` (MySQL) to `5432` (PostgreSQL).
 - **`src/Bot.ts`** — Added `.catch()` to `bot.login()` with `process.exit(1)` on failure.
 - **`src/db/migrate.ts`** — Wrapped migration in `.catch()` with `process.exit(1)` on failure.
@@ -66,4 +66,7 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 - **`src/events/commandsCreate.ts`** — Wrapped `require(filePath)` in try/catch to prevent a broken command from crashing the load loop; switched warning to `console.warn`.
 - **`src/events/guildCreate.ts` / `guildDelete.ts`** — Switched catch handlers from `console.log` to `console.error`.
 - **All command catch blocks** (`all.ts`, `disable.ts`, `ignoreuser.ts`, `unignoreuser.ts`, `clear.ts`) — Switched to `console.error`; wrapped error reply calls in their own try/catch.
-- **Inconsistent logging** — All logs now route through `printDev(...args)`, `printWarn(force, ...args)`, and `printError(force, ...args)` in `src/helpers/functions.ts`. Startup/script errors use `force: true`; runtime handler errors use `force: false`.
+- **Inconsistent logging** — All logs now route through `printDev(...args)`, `printWarn(force, ...args)`, and `printError(force, ...args)` in `src/helpers/functions.ts`. All errors use `force: true` so they surface in production.
+- **`clear.ts` missing `await`** — Added missing `await` on the success `interaction.reply()` inside the `bulkDelete` try block.
+- **`db/client.ts` early DATABASE_URL guard** — Added a null check on `DATABASE_URL` before the `postgres()` call so a missing env var fails with a clear fatal message at module load time rather than a cryptic postgres error.
+- **Stale comment in `trackVoice.ts`** — Removed outdated JSDoc block that said "still needs some work to be done".
