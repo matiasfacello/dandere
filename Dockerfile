@@ -1,6 +1,6 @@
 FROM node:22.11.0-alpine3.20
 
-RUN corepack enable && corepack prepare pnpm@11.1.1 --activate
+RUN npm install -g pnpm@11.1.1
 
 RUN mkdir -p /usr/src/bot
 WORKDIR /usr/src/bot
