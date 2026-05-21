@@ -8,11 +8,6 @@ export default {
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    host: process.env.DZZ_HOST,
-    port: process.env.DZZ_PORT,
-    user: process.env.DZZ_USER,
-    password: process.env.DZZ_PASSWORD,
-    database: process.env.DZZ_DATABASE,
-    ssl: process.env.NODE_ENV === "production" ? true : false,
+    url: process.env.DATABASE_URL!,
   },
 } satisfies Config;

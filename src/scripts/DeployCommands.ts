@@ -15,6 +15,7 @@ for (const folder of commandFolders) {
   const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".ts"));
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const command = require(filePath);
     commands.push(command.data.toJSON());
   }
@@ -26,7 +27,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
   try {
     printDev(`Started refreshing ${commands.length} application (/) commands.`);
 
-    const data = (await rest.put(Routes.applicationCommands(process.env.APP_ID), { body: commands })) as any[];
+    const data = (await rest.put(Routes.applicationCommands(process.env.APP_ID), { body: commands })) as unknown[];
 
     printDev(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {

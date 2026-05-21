@@ -11,28 +11,30 @@
     "dzz-introspect": "drizzle-kit introspect --config=drizzle.config.ts",
     "dzz-generate": "drizzle-kit generate --config=drizzle.config.ts",
     "dzz-migrate": "tsx src/db/migrate.ts",
-    "dzz-studio": "drizzle-kit studio --config=drizzle.config.ts"
+    "dzz-studio": "drizzle-kit studio --config=drizzle.config.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "author": "matiasfacello",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/builders": "^1.11.2",
-    "discord.js": "^14.20.0",
-    "drizzle-orm": "^0.44.2",
-    "postgres": "^3.4.7"
+    "@discordjs/builders": "^1.14.1",
+    "discord.js": "^14.26.4",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
-    "@types/node": "^24.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.34.1",
-    "@typescript-eslint/parser": "^8.34.1",
-    "dotenv": "^16.5.0",
-    "drizzle-kit": "^0.18.1",
-    "eslint": "^9.29.0",
-    "eslint-config-prettier": "^10.1.5",
-    "pg": "^8.16.0",
-    "prettier": "3.5.3",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@types/node": "^25.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "pg": "^8.21.0",
+    "prettier": "3.8.3",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
   }
 }

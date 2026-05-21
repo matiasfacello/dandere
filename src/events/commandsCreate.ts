@@ -21,7 +21,7 @@ export const commandsCreate = (bot: ClientType) => {
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const command = require(filePath);
         if ("data" in command && "execute" in command) {
           bot.commands.set(command.data.name, command);

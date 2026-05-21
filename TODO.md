@@ -19,14 +19,12 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 
 - **`src/db/schema.ts` `channelTracking`** — Remove redundant `index("voicetrack_guildId_idx")`; the unique index already covers the column.
 
-## Pending Dependency Updates
-
-_Do a full dependency update pass in one go._
-
-- **`drizzle-kit`** — pinned to `0.18.1` but `drizzle-orm` is `0.44.2`; `drizzle.config.ts` uses `dialect` which doesn't exist in the old kit's `Config` type. Upgrade `drizzle-kit` to a version compatible with `drizzle-orm@0.44` and verify the config shape.
-
 ## Completed
 
+- **Full dependency update pass** — bumped all deps: discord.js 14.20→14.26.4, drizzle-orm 0.44→0.45, drizzle-kit 0.18→0.31 (now compatible with drizzle-orm and the `dialect`/`url` config shape), typescript 5.8→6.0, eslint 9→10, tsx 4.20→4.22, and all other dev deps.
+- **`DATABASE_URL` consolidation** — removed individual `DZZ_HOST/PORT/USER/PASSWORD/DATABASE` env vars from `.env.example`, `drizzle.config.ts`, and `src/types/env.d.ts`; both the bot runtime and Drizzle Kit now share the single `DATABASE_URL` connection string.
+- **ESLint flat config migration** — replaced legacy `.eslintrc.cjs` with `eslint.config.cjs` (ESLint 9+ flat config); `.cjs` files excluded from linting. Added `pnpm lint` and `pnpm typecheck` scripts to `package.json`.
+- **`clientReady` rename** — `src/Bot.ts` `bot.on("ready", ...)` updated to `"clientReady"` per discord.js v14 deprecation ahead of v15.
 - **Rate limiting for commands** — Added `src/helpers/rateLimiter.ts` with sliding-window rate limits (2 cmd/s per `guildId:userId`, 10 cmd/s per guild); checked in `commandsEvent.ts` before dispatch, replies ephemerally with remaining wait time. Cleanup scheduler supports a fixed clock hour (`RATE_LIMIT_CLEANUP_HOUR`) or an interval (`RATE_LIMIT_CLEANUP_HOURS`, default 24 h).
 - **Graceful shutdown** — Added `SIGTERM`/`SIGINT` handlers in `src/Bot.ts`; exported `sql` pool from `db/client.ts` so both the Discord client and DB connection close cleanly on shutdown.
 - **`/status` command** — Added `src/commands/info/status.ts`; Administrator-only, ephemeral reply with bot online status, WebSocket ping, and DB connectivity.

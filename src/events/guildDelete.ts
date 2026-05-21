@@ -10,7 +10,7 @@ import { printDev, printError } from "../helpers/functions";
 export const guildDelete = (bot: ClientType) => {
   bot.on("guildDelete", async (guild) => {
     try {
-      const [createLog] = await dzz.insert(log).values({
+      await dzz.insert(log).values({
         action: 202,
         guildId: guild.id,
         guildName: guild.name,

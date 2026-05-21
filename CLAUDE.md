@@ -20,7 +20,8 @@ pnpm dzz-introspect # Introspect existing PostgreSQL schema
 
 There is no separate build step — TypeScript runs directly via `tsx`. No test suite exists.
 
-To lint: `pnpm dlx eslint src/` — ESLint is configured but has no script alias.
+To lint: `pnpm lint` — runs ESLint over `src/`.
+To typecheck: `pnpm typecheck` — runs `tsc --noEmit`.
 
 ## Architecture
 
@@ -52,8 +53,7 @@ Copy `.env.example` to `.env`. Required variables:
 |---|---|
 | `BOT_TOKEN` | Discord bot token |
 | `APP_ID` | Discord application ID |
-| `DATABASE_URL` | Full PostgreSQL connection string |
-| `DZZ_HOST`, `DZZ_PORT`, `DZZ_USER`, `DZZ_PASSWORD`, `DZZ_DATABASE` | Individual DB credentials (used by Drizzle Kit) |
+| `DATABASE_URL` | Full PostgreSQL connection string — used by both the bot and Drizzle Kit |
 | `NODE_ENV` | `"development"` or `"production"` |
 
 ## Key Conventions

@@ -10,7 +10,7 @@ import { printDev, printError } from "../helpers/functions";
 export const guildCreate = (bot: ClientType) => {
   bot.on("guildCreate", async (guild) => {
     try {
-      const [guildInsert] = await dzz
+      await dzz
         .insert(guildSchema)
         .values({
           guildId: guild.id,
@@ -20,7 +20,7 @@ export const guildCreate = (bot: ClientType) => {
           target: guildSchema.guildId,
         });
 
-      const [createLog] = await dzz.insert(log).values({
+      await dzz.insert(log).values({
         action: 201,
         guildId: guild.id,
         guildName: guild.name,

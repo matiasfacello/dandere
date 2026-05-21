@@ -1,5 +1,5 @@
 import { dzz, eq } from "db/client";
-import { log, channelTracking, guild } from "db/schema";
+import { log, guild } from "db/schema";
 import { VoiceState, type TextChannel } from "discord.js";
 import { printDev, printError } from "../helpers/functions";
 

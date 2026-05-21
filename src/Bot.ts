@@ -23,7 +23,7 @@ bot.login(process.env.BOT_TOKEN).catch((err) => {
   process.exit(1);
 });
 
-bot.on("ready", () => {
+bot.on("clientReady", () => {
   printDev(`${bot.user?.tag} is ready!`);
 });
 

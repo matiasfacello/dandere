@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "module": "CommonJS",
+    "module": "Node16",
     "rootDir": ".",
     "outDir": "./dist/",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "importHelpers": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
@@ -17,9 +17,12 @@
     "removeComments": true,
     "typeRoots": ["node_modules/@types"],
     "sourceMap": false,
-    "baseUrl": "./src/"
+    "paths": {
+      "db/*": ["./src/db/*"],
+      "helpers/*": ["./src/helpers/*"]
+    }
   },
   "files": ["src/Bot.ts"],
-  "include": ["./**/*.ts", ".eslintrc.cjs"],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
