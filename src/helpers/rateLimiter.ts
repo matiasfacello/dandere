@@ -1,4 +1,4 @@
-import { printDev } from "helpers/functions";
+import { printDev, printWarn } from "helpers/functions";
 
 const WINDOW_MS = 1_000;
 const USER_LIMIT = 2;

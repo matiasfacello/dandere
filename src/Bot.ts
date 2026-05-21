@@ -48,12 +48,14 @@ process.on("SIGINT", () => {
   });
 });
 
-commandsCreate(bot);
-commandsEvent(bot);
-
-guildCreate(bot);
-guildDelete(bot);
-
-trackVoice(bot);
-
-scheduleLogCleanup();
+(async () => {
+  await commandsCreate(bot);
+  commandsEvent(bot);
+  guildCreate(bot);
+  guildDelete(bot);
+  trackVoice(bot);
+  scheduleLogCleanup();
+})().catch((err) => {
+  printError(true, "Failed to initialize bot:", err);
+  process.exit(1);
+});

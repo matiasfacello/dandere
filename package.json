@@ -7,7 +7,7 @@
     "start": "tsx watch src/Bot.ts",
     "dev": "tsx watch src/Bot.ts",
     "prod": "tsx src/Bot.ts",
-    "commands": "tsx src/scripts/DeleteCommands.ts && tsx src/scripts/DeployCommands.ts",
+    "commands": "tsx src/scripts/DeployCommands.ts",
     "dzz-introspect": "drizzle-kit introspect --config=drizzle.config.ts",
     "dzz-generate": "drizzle-kit generate --config=drizzle.config.ts",
     "dzz-migrate": "tsx src/db/migrate.ts",

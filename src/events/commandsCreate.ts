@@ -3,12 +3,7 @@ import * as path from "path";
 import { Collection } from "discord.js";
 import { printWarn, printError } from "../helpers/functions";
 
-/**
- * Create commands for the bot
- *
- * @param bot
- */
-export const commandsCreate = (bot: ClientType) => {
+export const commandsCreate = async (bot: ClientType) => {
   bot.commands = new Collection();
 
   const foldersPath = path.join(__dirname, "..", "commands");
@@ -21,8 +16,7 @@ export const commandsCreate = (bot: ClientType) => {
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const command = require(filePath);
+        const command = await import(filePath);
         if ("data" in command && "execute" in command) {
           bot.commands.set(command.data.name, command);
         } else {

@@ -7,9 +7,6 @@
 
 - **Auto-deploy commands on startup** — Instead of a manual `npm run commands` step, compare a hash of the local serialized command definitions against what Discord currently has registered and only call `PUT applicationCommands` when they differ. Discord rate-limits global command updates to 200/day per app, so change-detection is necessary before enabling this.
 
-- **Remove `DeleteCommands.ts`** — `PUT applicationCommands` with a body already replaces all commands atomically; the delete step is redundant. Remove the script and drop the delete step from the `commands` npm script.
-
-- **Replace `require()` with dynamic `import()` in command loading** — `src/events/commandsCreate.ts` and `src/scripts/DeployCommands.ts` use `require(filePath)` on `.ts` files. Switch to `await import(filePath)` for idiomatic ESM and forward-compatibility if the project ever moves off `tsx`.
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
@@ -31,6 +28,8 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 
 ## Completed
 
+- **Removed `DeleteCommands.ts`** — `PUT applicationCommands` with a full body replaces commands atomically; delete step was redundant. Script deleted, `commands` script in `package.json` updated.
+- **Replaced `require()` with `await import()`** — all 6 command files converted to named exports (`export const data`, `export async function execute`); `commandsCreate.ts` made async; `DeployCommands.ts` loop moved inside async IIFE; `Bot.ts` startup wrapped in async IIFE to await `commandsCreate`.
 - **`/trackvoice-disable` fix** — `trackVoice.ts` now checks `getVoiceTrack.trackAll` in both `oneChannelBehavior` and `twoChannelBehavior`; disabling tracking actually stops the bot from posting.
 - **Removed unused `GuildPresences` privileged intent** — dropped from `Bot.ts`; no longer blocks scaling past 100 servers without Discord verification.
 - **Rate limiter cleanup no longer logs in production** — changed `printWarn(true, ...)` to `printDev(...)` in `rateLimiter.ts`; import updated accordingly.
