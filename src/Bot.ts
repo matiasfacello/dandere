@@ -16,7 +16,7 @@ for (const key of REQUIRED_ENV_VARS) {
 }
 
 const bot = new Client({
-  intents: [GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers],
+  intents: [GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 }) as ClientType;
 
 bot.login(process.env.BOT_TOKEN).catch((err) => {

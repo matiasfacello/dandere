@@ -43,7 +43,7 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
   // Validate if the server is tracked
   const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, state.guild.id));
 
-  if (!getVoiceTrack) return;
+  if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
 
   printDev(getVoiceTrack);
 
@@ -92,7 +92,7 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
 
   const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, newState.guild.id));
 
-  if (!getVoiceTrack) return;
+  if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
 
   printDev(getVoiceTrack);
 

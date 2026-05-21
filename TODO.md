@@ -13,11 +13,6 @@
 
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
-- **`/trackvoice-disable` doesn't work** — `src/events/trackVoice.ts` fetches the guild row but never checks `getVoiceTrack.trackAll`. The flag is written by the command but never read, so tracking continues after disabling.
-
-- **Remove unused `GuildPresences` intent** — `src/Bot.ts:18` requests `GatewayIntentBits.GuildPresences` (a privileged intent) but it is not used anywhere. This will block scaling past 100 servers without Discord verification.
-
-- **Rate limiter cleanup logs always print in production** — `src/helpers/rateLimiter.ts:15,31` call `printWarn(true, ...)` for the cleanup start/done messages. Should be `printDev(...)` since this is noise, not a warning.
 
 
 ## Premium Features
@@ -36,6 +31,9 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 
 ## Completed
 
+- **`/trackvoice-disable` fix** — `trackVoice.ts` now checks `getVoiceTrack.trackAll` in both `oneChannelBehavior` and `twoChannelBehavior`; disabling tracking actually stops the bot from posting.
+- **Removed unused `GuildPresences` privileged intent** — dropped from `Bot.ts`; no longer blocks scaling past 100 servers without Discord verification.
+- **Rate limiter cleanup no longer logs in production** — changed `printWarn(true, ...)` to `printDev(...)` in `rateLimiter.ts`; import updated accordingly.
 - **Log retention cleanup** — Added `src/helpers/logCleanup.ts`; runs on startup then every 24 h. Deletes log rows older than 30 days per guild (`FREE_TIER_RETENTION_DAYS`). Structured per-guild so extending to premium retention later requires only adding the `logRetentionDays` column and a one-line change in the cleanup loop.
 
 - **Full dependency update pass** — bumped all deps: discord.js 14.20→14.26.4, drizzle-orm 0.44→0.45, drizzle-kit 0.18→0.31 (now compatible with drizzle-orm and the `dialect`/`url` config shape), typescript 5.8→6.0, eslint 9→10, tsx 4.20→4.22, and all other dev deps.

@@ -56,6 +56,15 @@ Copy `.env.example` to `.env`. Required variables:
 | `DATABASE_URL` | Full PostgreSQL connection string — used by both the bot and Drizzle Kit |
 | `NODE_ENV` | `"development"` or `"production"` |
 
+## Commit Conventions
+
+Format: `type: short lowercase description`
+
+- `feat:` — new feature or meaningful improvement
+- `patch:` — bug fix or small correction
+
+No scope, no ticket numbers, no capital letters.
+
 ## Key Conventions
 
 - Imports use the `src/` baseUrl alias — e.g., `import { dzz } from "db/client"` instead of relative paths.

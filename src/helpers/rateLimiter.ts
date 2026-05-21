@@ -1,4 +1,4 @@
-import { printWarn } from "helpers/functions";
+import { printDev } from "helpers/functions";
 
 const WINDOW_MS = 1_000;
 const USER_LIMIT = 2;
@@ -12,7 +12,7 @@ function pruneWindow(timestamps: number[], now: number): number[] {
 }
 
 function runCleanup(): void {
-  printWarn(true, "[RateLimiter] Cleanup started.");
+  printDev("[RateLimiter] Cleanup started.");
   const now = Date.now();
   let deleted = 0;
   for (const [key, ts] of userBuckets) {
@@ -27,7 +27,7 @@ function runCleanup(): void {
       deleted++;
     }
   }
-  printWarn(true, `[RateLimiter] Cleanup done. Removed ${deleted} stale entries.`);
+  printDev(`[RateLimiter] Cleanup done. Removed ${deleted} stale entries.`);
 }
 
 function msUntilHour(hour: number): number {
