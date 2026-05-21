@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { pathToFileURL } from "url";
 import { REST, Routes } from "discord.js";
 import { config } from "dotenv";
 import { printDev, printError } from "../helpers/functions";
@@ -23,7 +24,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
     const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".ts"));
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
-      const command = await import(filePath);
+      const command = await import(pathToFileURL(filePath).href);
       commands.push(command.data.toJSON());
     }
   }

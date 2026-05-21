@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { pathToFileURL } from "url";
 import { Collection } from "discord.js";
 import { printWarn, printError } from "../helpers/functions";
 
@@ -16,7 +17,7 @@ export const commandsCreate = async (bot: ClientType) => {
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
       try {
-        const command = await import(filePath);
+        const command = await import(pathToFileURL(filePath).href);
         if ("data" in command && "execute" in command) {
           bot.commands.set(command.data.name, command);
         } else {
