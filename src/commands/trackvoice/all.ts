@@ -19,7 +19,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const guildId = interaction.guildId;
 
     if (channel && guildId) {
-      const [upsert] = await dzz
+      await dzz
         .insert(guild)
         .values({
           guildId: guildId,
@@ -30,18 +30,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           target: guild.guildId,
           set: { trackAll: true, logChannelId: channel.id },
           where: eq(guild.guildId, guildId),
-        })
-        .returning();
+        });
 
-      if (upsert && upsert.logChannelId) {
-        try {
-          const logChannel = (await interaction.client.channels.fetch(upsert.logChannelId)) as TextChannel;
-          await logChannel.send(`This channel has been selected to track all voice channels log.`);
-        } catch (err) {
-          printError(true, `Failed to send message to log channel ${upsert.logChannelId}:`, err);
-        }
-        await interaction.editReply(`Channel <#${upsert.logChannelId}> is now being used to track all voice channels. `);
+      try {
+        const logChannel = (await interaction.client.channels.fetch(channel.id)) as TextChannel;
+        await logChannel.send(`This channel has been selected to track all voice channels log.`);
+      } catch (err) {
+        printError(true, `Failed to send message to log channel ${channel.id}:`, err);
       }
+
+      await interaction.editReply(`Channel <#${channel.id}> is now being used to track all voice channels.`);
 
       await dzz.insert(log).values({
         action: 303,

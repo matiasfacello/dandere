@@ -6,6 +6,11 @@ import { printDev, printError } from "../helpers/functions";
 
 config();
 
+if (!process.env.BOT_TOKEN || !process.env.APP_ID) {
+  printError(true, "Missing required environment variable: BOT_TOKEN or APP_ID");
+  process.exit(1);
+}
+
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 (async () => {
