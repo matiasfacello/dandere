@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, integer, pgTable, serial, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, serial, text, timestamp, unique, uniqueIndex, varchar } from "drizzle-orm/pg-core";
 
 export const guild = pgTable(
   "guild",
@@ -11,7 +11,7 @@ export const guild = pgTable(
     ignoreUsers: text("ignoreUsers").array(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("guild_guildId_key").on(table.guildId)]
+  (table) => [unique("guild_guildId_key").on(table.guildId)]
 );
 
 export const guildRelations = relations(guild, ({ many }) => ({
