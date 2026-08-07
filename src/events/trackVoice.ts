@@ -26,16 +26,23 @@ export const trackVoice = (bot: ClientType) => {
 
       await twoChannelBehavior(bot, oldState, newState);
     } catch (err) {
-      printError(true,"voiceStateUpdate handler error:", err);
+      printError(true, "voiceStateUpdate handler error:", err);
     }
   });
 };
 
-async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: number) {
+async function oneChannelBehavior(
+  bot: ClientType,
+  state: VoiceState,
+  action: number,
+) {
   if (!state.channel || !state.member) return;
 
   // Validate if the server is tracked
-  const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, state.guild.id));
+  const [getVoiceTrack] = await dzz
+    .select()
+    .from(guild)
+    .where(eq(guild.guildId, state.guild.id));
 
   if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
 
@@ -47,10 +54,16 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
 
   if (getVoiceTrack.logChannelId) {
     try {
-      const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
+      const channel = (await bot.channels.fetch(
+        getVoiceTrack.logChannelId,
+      )) as TextChannel;
       await channel.send(msg);
     } catch (err) {
-      printError(true,`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+      printError(
+        true,
+        `Failed to send message to log channel ${getVoiceTrack.logChannelId}:`,
+        err,
+      );
     }
   }
 
@@ -67,9 +80,13 @@ async function oneChannelBehavior(bot: ClientType, state: VoiceState, action: nu
   printDev(msg);
 }
 
-async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newState: VoiceState) {
+async function twoChannelBehavior(
+  bot: ClientType,
+  oldState: VoiceState,
+  newState: VoiceState,
+) {
   let actionNumber = 102;
-  let msg = null;
+  let msg: string;
 
   if (!oldState.channel || !newState.channel) return;
   if (!oldState.member || !newState.member) return;
@@ -84,7 +101,10 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
     actionNumber = newState.streaming ? 104 : 105;
   }
 
-  const [getVoiceTrack] = await dzz.select().from(guild).where(eq(guild.guildId, newState.guild.id));
+  const [getVoiceTrack] = await dzz
+    .select()
+    .from(guild)
+    .where(eq(guild.guildId, newState.guild.id));
 
   if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
 
@@ -100,10 +120,16 @@ async function twoChannelBehavior(bot: ClientType, oldState: VoiceState, newStat
 
   if (getVoiceTrack.logChannelId) {
     try {
-      const channel = (await bot.channels.fetch(getVoiceTrack.logChannelId)) as TextChannel;
+      const channel = (await bot.channels.fetch(
+        getVoiceTrack.logChannelId,
+      )) as TextChannel;
       await channel.send(msg);
     } catch (err) {
-      printError(true,`Failed to send message to log channel ${getVoiceTrack.logChannelId}:`, err);
+      printError(
+        true,
+        `Failed to send message to log channel ${getVoiceTrack.logChannelId}:`,
+        err,
+      );
     }
   }
 
