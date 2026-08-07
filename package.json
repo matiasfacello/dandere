@@ -19,22 +19,24 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/builders": "^1.14.1",
-    "discord.js": "^14.26.4",
+    "discord.js": "^14.27.0",
     "drizzle-orm": "^0.45.2",
-    "postgres": "^3.4.9"
+    "postgres": "^3.4.9",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-    "@types/node": "^25.9.0",
-    "@typescript-eslint/eslint-plugin": "^8.59.4",
-    "@typescript-eslint/parser": "^8.59.4",
+    "@types/node": "^25.9.5",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^10.4.0",
+    "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
-    "pg": "^8.21.0",
+    "pg": "^8.22.0",
     "prettier": "3.8.3",
-    "tsx": "^4.22.3",
+    "tsx": "^4.23.8",
     "typescript": "^6.0.3"
   }
 }
