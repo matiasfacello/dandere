@@ -4,7 +4,7 @@ Completed work, newest first. Open items live in [`TODO.md`](../TODO.md).
 
 - **Command wording pass** — Rewrote every slash command description and reply: verb-first, consistent casing, no trailing periods, one shared error line. Fixed "are not longer being tracked".
 - **`/trackvoice-disable everything` flag** — Optional boolean that also switches off every individually tracked channel. Default still clears `trackAll` only, and the reply now says so.
-- **`channelTracking` unique index** — Moved `voicetrack_guildId_key` onto `(guildId, channelId)`; the table previously allowed only one tracked channel per guild. Kept `voicetrack_guildId_idx` for guild-only lookups.
+- **`channelTracking` unique index** — Moved `voicetrack_guildId_key` onto `(guildId, channelId)`; the table previously allowed only one tracked channel per guild. Kept `voicetrack_guildId_idx` for guild-only lookups. Applied 2026-09-03; the drop needed `IF EXISTS` because the live database never had the old index.
 - **Per-channel tracking** — Added commands to enable or disable individual voice channels and a shared decision path covering `trackAll`, enabled channel rows, and ignored users.
 - **Auto-deploy commands on startup** — Hashes sorted local command definitions and deploys only when they differ from the last successful deployment; `pnpm commands` remains a manual force-deploy.
 - **Removed `DeleteCommands.ts`** — `PUT applicationCommands` with a full body replaces commands atomically; delete step was redundant. Script deleted, `commands` script in `package.json` updated.

@@ -36,6 +36,27 @@ you. Forgetting it ships code against an old schema.
 > Check [`TODO.md`](../TODO.md) before deploying — it flags any migration that is generated
 > but not yet applied.
 
+### Ownership
+
+The bot's tables (`guild`, `channelTracking`, `log`, `premiumPlans`, `premiumSubscription`)
+are owned by `demonadm`, not by the `dandereusr` role the bot connects as. Reads and writes
+work fine as `dandereusr`, but `CREATE INDEX` and `ALTER TABLE` need ownership, so migrations
+must be run with a `DATABASE_URL` pointing at `demonadm` — then switched back.
+
+To stop doing that dance, hand the tables over once as `demonadm`:
+
+```sql
+ALTER TABLE "channelTracking" OWNER TO dandereusr;
+ALTER TABLE "guild" OWNER TO dandereusr;
+ALTER TABLE "log" OWNER TO dandereusr;
+ALTER TABLE "premiumPlans" OWNER TO dandereusr;
+ALTER TABLE "premiumSubscription" OWNER TO dandereusr;
+```
+
+The other tables in that database (`account`, `session`, `user`, `verification`) already
+belong to `dandereusr`, so this makes ownership consistent rather than introducing a new
+arrangement.
+
 ## 2. Slash commands
 
 Commands are global, and Discord rate-limits global command updates to **200 per day per

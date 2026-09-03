@@ -1,9 +1,5 @@
 # TODO
 
-> ⚠️ **UNAPPLIED MIGRATION PENDING** — `drizzle/0003_blushing_tyrannus.sql` (commit `4fb5245`)
-> makes `channelTracking` unique on `(guildId, channelId)`. Generated but **not applied**.
-> Owner must run `pnpm dzz-migrate`. Task 3 (per-channel tracking) is broken until this lands.
-
 ## Missing Features / Next Steps
 
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
@@ -23,8 +19,6 @@ _Free tier baseline is defined in `src/helpers/logCleanup.ts`. Premium upgrades 
 _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enough to justify a migration._
 
 - **`src/db/schema.ts` `guild`** — Add `logRetentionDays: integer("logRetentionDays")` (nullable). Null means free tier; premium guilds get a value set here. Required before the log cleanup can respect per-guild retention windows.
-
-- **`src/db/schema.ts` `channelTracking`** — Generated a migration to make `voicetrack_guildId_key` unique on `(guildId, channelId)`, allowing multiple tracked channels per guild. Kept `voicetrack_guildId_idx` for guild-only lookups. Owner must run `pnpm dzz-migrate` to apply it.
 
 ## Completed
 
