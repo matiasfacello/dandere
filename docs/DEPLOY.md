@@ -38,24 +38,29 @@ you. Forgetting it ships code against an old schema.
 
 ### Ownership
 
-The bot's tables (`guild`, `channelTracking`, `log`, `premiumPlans`, `premiumSubscription`)
-are owned by `demonadm`, not by the `dandereusr` role the bot connects as. Reads and writes
-work fine as `dandereusr`, but `CREATE INDEX` and `ALTER TABLE` need ownership, so migrations
-must be run with a `DATABASE_URL` pointing at `demonadm` — then switched back.
+Migrations need to own the objects they alter, not just hold write access on them. Everything
+in `public` and `drizzle` — all 10 tables and all 3 sequences — is owned by `dandereusr`, the
+role the bot connects as, so `pnpm dzz-migrate` works straight from `.env`.
 
-To stop doing that dance, hand the tables over once as `demonadm`:
+If a `must be owner of table X` error (SQLSTATE 42501) ever appears, something was created by
+another role. Hand it over as that role:
 
 ```sql
-ALTER TABLE "channelTracking" OWNER TO dandereusr;
-ALTER TABLE "guild" OWNER TO dandereusr;
-ALTER TABLE "log" OWNER TO dandereusr;
-ALTER TABLE "premiumPlans" OWNER TO dandereusr;
-ALTER TABLE "premiumSubscription" OWNER TO dandereusr;
+ALTER TABLE "X" OWNER TO dandereusr;
 ```
 
-The other tables in that database (`account`, `session`, `user`, `verification`) already
-belong to `dandereusr`, so this makes ownership consistent rather than introducing a new
-arrangement.
+Changing a table's owner does **not** move the sequences behind its `id` column, so check those
+too — they are separate objects:
+
+```sql
+SELECT c.relname, c.relkind, pg_get_userbyid(c.relowner) AS owner
+FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname IN ('public', 'drizzle') AND c.relkind IN ('r', 'S');
+```
+
+```sql
+ALTER SEQUENCE X_id_seq OWNER TO dandereusr;
+```
 
 ## 2. Slash commands
 
