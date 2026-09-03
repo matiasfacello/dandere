@@ -22,6 +22,13 @@
       "when": 1781130630589,
       "tag": "0002_busy_titanium_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788466867157,
+      "tag": "0003_blushing_tyrannus",
+      "breakpoints": true
     }
   ]
 }

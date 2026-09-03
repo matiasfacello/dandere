@@ -27,7 +27,10 @@ export const channelTracking = pgTable(
     channelId: varchar("channelId").notNull(),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
-  (table) => [uniqueIndex("voicetrack_guildId_key").on(table.guildId), index("voicetrack_guildId_idx").on(table.guildId)]
+  (table) => [
+    uniqueIndex("voicetrack_guildId_key").on(table.guildId, table.channelId),
+    index("voicetrack_guildId_idx").on(table.guildId),
+  ]
 );
 
 export const channelRelations = relations(channelTracking, ({ one }) => ({

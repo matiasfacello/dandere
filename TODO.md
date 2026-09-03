@@ -24,7 +24,7 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 
 - **`src/db/schema.ts` `guild`** — Add `logRetentionDays: integer("logRetentionDays")` (nullable). Null means free tier; premium guilds get a value set here. Required before the log cleanup can respect per-guild retention windows.
 
-- **`src/db/schema.ts` `channelTracking`** — Remove redundant `index("voicetrack_guildId_idx")`; the unique index already covers the column.
+- **`src/db/schema.ts` `channelTracking`** — Generated a migration to make `voicetrack_guildId_key` unique on `(guildId, channelId)`, allowing multiple tracked channels per guild. Kept `voicetrack_guildId_idx` for guild-only lookups. Owner must run `pnpm dzz-migrate` to apply it.
 
 ## Completed
 
