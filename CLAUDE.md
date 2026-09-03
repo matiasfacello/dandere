@@ -67,6 +67,7 @@ Format: `type: short lowercase description`
 - `patch:` — bug fix or small correction
 
 No scope, no ticket numbers, no capital letters.
+Use one-line commit messages with no attribution or co-author trailers.
 
 ## Key Conventions
 
