@@ -5,7 +5,7 @@ Owner is away. Task 3 is the only one needing an owner decision, and it is writt
 wait.
 
 **Read first:** [`CLAUDE.md`](CLAUDE.md) — architecture, logging rules, commit conventions.
-[`TODO.md`](TODO.md) — open items at the top, completed work below.
+[`TODO.md`](TODO.md) — open items. [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — completed work.
 
 **Baseline:** commit `e14895d`, `main`, tree clean, last commit 2026-08-06.
 

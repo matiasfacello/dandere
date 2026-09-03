@@ -1,0 +1,51 @@
+# Changelog
+
+Completed work, newest first. Open items live in [`TODO.md`](../TODO.md).
+
+- **Command wording pass** — Rewrote every slash command description and reply: verb-first, consistent casing, no trailing periods, one shared error line. Fixed "are not longer being tracked".
+- **`/trackvoice-disable everything` flag** — Optional boolean that also switches off every individually tracked channel. Default still clears `trackAll` only, and the reply now says so.
+- **`channelTracking` unique index** — Moved `voicetrack_guildId_key` onto `(guildId, channelId)`; the table previously allowed only one tracked channel per guild. Kept `voicetrack_guildId_idx` for guild-only lookups.
+- **Per-channel tracking** — Added commands to enable or disable individual voice channels and a shared decision path covering `trackAll`, enabled channel rows, and ignored users.
+- **Auto-deploy commands on startup** — Hashes sorted local command definitions and deploys only when they differ from the last successful deployment; `pnpm commands` remains a manual force-deploy.
+- **Removed `DeleteCommands.ts`** — `PUT applicationCommands` with a full body replaces commands atomically; delete step was redundant. Script deleted, `commands` script in `package.json` updated.
+- **Replaced `require()` with `await import()`** — all 6 command files converted to named exports (`export const data`, `export async function execute`); `commandsCreate.ts` made async; `DeployCommands.ts` loop moved inside async IIFE; `Bot.ts` startup wrapped in async IIFE to await `commandsCreate`.
+- **`/trackvoice-disable` fix** — `trackVoice.ts` now checks `getVoiceTrack.trackAll` in both `oneChannelBehavior` and `twoChannelBehavior`; disabling tracking actually stops the bot from posting.
+- **Removed unused `GuildPresences` privileged intent** — dropped from `Bot.ts`; no longer blocks scaling past 100 servers without Discord verification.
+- **Rate limiter cleanup no longer logs in production** — changed `printWarn(true, ...)` to `printDev(...)` in `rateLimiter.ts`; import updated accordingly.
+- **Log retention cleanup** — Added `src/helpers/logCleanup.ts`; runs on startup then every 24 h. Deletes log rows older than 30 days per guild (`FREE_TIER_RETENTION_DAYS`). Structured per-guild so extending to premium retention later requires only adding the `logRetentionDays` column and a one-line change in the cleanup loop.
+
+- **Full dependency update pass** — bumped all deps: discord.js 14.20→14.26.4, drizzle-orm 0.44→0.45, drizzle-kit 0.18→0.31 (now compatible with drizzle-orm and the `dialect`/`url` config shape), typescript 5.8→6.0, eslint 9→10, tsx 4.20→4.22, and all other dev deps.
+- **`DATABASE_URL` consolidation** — removed individual `DZZ_HOST/PORT/USER/PASSWORD/DATABASE` env vars from `.env.example`, `drizzle.config.ts`, and `src/types/env.d.ts`; both the bot runtime and Drizzle Kit now share the single `DATABASE_URL` connection string.
+- **ESLint flat config migration** — replaced legacy `.eslintrc.cjs` with `eslint.config.cjs` (ESLint 9+ flat config); `.cjs` files excluded from linting. Added `pnpm lint` and `pnpm typecheck` scripts to `package.json`.
+- **`clientReady` rename** — `src/Bot.ts` `bot.on("ready", ...)` updated to `"clientReady"` per discord.js v14 deprecation ahead of v15.
+- **Rate limiting for commands** — Added `src/helpers/rateLimiter.ts` with sliding-window rate limits (2 cmd/s per `guildId:userId`, 10 cmd/s per guild); checked in `commandsEvent.ts` before dispatch, replies ephemerally with remaining wait time. Cleanup scheduler supports a fixed clock hour (`RATE_LIMIT_CLEANUP_HOUR`) or an interval (`RATE_LIMIT_CLEANUP_HOURS`, default 24 h).
+- **Graceful shutdown** — Added `SIGTERM`/`SIGINT` handlers in `src/Bot.ts`; exported `sql` pool from `db/client.ts` so both the Discord client and DB connection close cleanly on shutdown.
+- **`/status` command** — Added `src/commands/info/status.ts`; Administrator-only, ephemeral reply with bot online status, WebSocket ping, and DB connectivity.
+- **Dockerfile production build** — Added `prod` script (`tsx src/Bot.ts`, no `--watch`); updated `CMD` to use it instead of `npm start`.
+
+- **`src/db/ignoreUsers.ts`** — Extracted `addIgnoredUser(guildId, userId)` and `removeIgnoredUser(guildId, userId)` helpers; updated `ignoreuser.ts` and `unignoreuser.ts` to use them.
+- **`src/types/ClientType.d.ts`** — Defined `Command` interface (`{ data: SlashCommandBuilder; execute: (interaction: ChatInputCommandInteraction) => Promise<void> }`); `commands` collection now typed as `Collection<string, Command>`.
+- **`src/events/commandsCreate.ts`** — Added comment documenting that `.ts` filter is intentional since `tsx` is the only runtime.
+- **`src/events/trackVoice.ts`** — Rewrote unclear comment on cross-guild transitions.
+
+- **`Dockerfile`** — Removed `ARG`/`ENV` lines for `BOT_TOKEN`, `APP_ID`, `DATABASE_URL`; secrets are now injected at runtime by CapRover.
+- **`src/Bot.ts`** — Added startup validation: checks all required env vars are non-empty and calls `process.exit(1)` with a clear message if any are missing.
+- **`src/commands/trackvoice/ignoreuser.ts`** — Added regex guard (`/^\d{17,20}$/`) on `user.id` before writing to the database.
+- **`src/db/schema.ts` `ignoreUsers`** — Changed from `varchar` to `text[]`; updated `ignoreuser.ts` and `unignoreuser.ts` to use array operations. Migration applied to live DB.
+
+- **`src/commands/mod/clear.ts`** — Removed dead `isNaN(amount)` guard; added missing `return` after range-check reply.
+- **`src/events/trackVoice.ts`** — Replaced inverted mute/deaf/video early-returns with a single guard that only skips when neither channel nor streaming changed.
+- **`src/db/client.ts`** — Raised connection pool from `max: 1` to `max: 10`.
+- **`src/commands/trackvoice/disable.ts`** — Removed redundant `trackUpdate` null guard and `.returning()`; existence is already confirmed by the `existingTrack.length === 0` check above, so the update always replies unconditionally.
+- **`.env.example`** — Fixed `DZZ_PORT` from `3306` (MySQL) to `5432` (PostgreSQL).
+- **`src/Bot.ts`** — Added `.catch()` to `bot.login()` with `process.exit(1)` on failure.
+- **`src/db/migrate.ts`** — Wrapped migration in `.catch()` with `process.exit(1)` on failure.
+- **`src/events/trackVoice.ts`** — Wrapped both `bot.channels.fetch()` calls in try/catch; added top-level try/catch in the event handler (with helper calls now properly awaited).
+- **`src/events/commandsEvent.ts`** — Wrapped the catch body's `reply()`/`followUp()` in its own try/catch.
+- **`src/events/commandsCreate.ts`** — Wrapped `require(filePath)` in try/catch to prevent a broken command from crashing the load loop; switched warning to `console.warn`.
+- **`src/events/guildCreate.ts` / `guildDelete.ts`** — Switched catch handlers from `console.log` to `console.error`.
+- **All command catch blocks** (`all.ts`, `disable.ts`, `ignoreuser.ts`, `unignoreuser.ts`, `clear.ts`) — Switched to `console.error`; wrapped error reply calls in their own try/catch.
+- **Inconsistent logging** — All logs now route through `printDev(...args)`, `printWarn(force, ...args)`, and `printError(force, ...args)` in `src/helpers/functions.ts`. All errors use `force: true` so they surface in production.
+- **`clear.ts` missing `await`** — Added missing `await` on the success `interaction.reply()` inside the `bulkDelete` try block.
+- **`db/client.ts` early DATABASE_URL guard** — Added a null check on `DATABASE_URL` before the `postgres()` call so a missing env var fails with a clear fatal message at module load time rather than a cryptic postgres error.
+- **Stale comment in `trackVoice.ts`** — Removed outdated JSDoc block that said "still needs some work to be done".
