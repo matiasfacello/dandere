@@ -7,13 +7,13 @@ import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("trackvoice-channel")
-  .setDescription("Starts tracking one voice channel")
+  .setDescription("Track voice activity in one voice channel")
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
   .addChannelOption((option) =>
     option.setName("voice-channel").setDescription("Voice channel to track").addChannelTypes(ChannelType.GuildVoice).setRequired(true)
   )
   .addChannelOption((option) =>
-    option.setName("log-channel").setDescription("Channel to log connections to").addChannelTypes(ChannelType.GuildText).setRequired(true)
+    option.setName("log-channel").setDescription("Text channel to post the logs in").addChannelTypes(ChannelType.GuildText).setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -51,12 +51,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
       try {
         const channel = (await interaction.client.channels.fetch(logChannel.id)) as TextChannel;
-        await channel.send(`This channel has been selected to track ${voiceChannel} voice channel log.`);
+        await channel.send(`Voice activity in ${voiceChannel} will be logged here.`);
       } catch (err) {
         printError(true, `Failed to send message to log channel ${logChannel.id}:`, err);
       }
 
-      await interaction.editReply(`Channel ${voiceChannel} is now being tracked in <#${logChannel.id}>.`);
+      await interaction.editReply(`Now tracking ${voiceChannel}. Logs will go to <#${logChannel.id}>.`);
 
       await dzz.insert(log).values({
         action: 301,
@@ -69,7 +69,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "/trackvoice-channel err: ", err);
     try {
-      await interaction.editReply(`There was an error using this function.`);
+      await interaction.editReply(`Something went wrong. Try again.`);
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }

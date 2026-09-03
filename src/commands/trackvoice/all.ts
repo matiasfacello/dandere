@@ -6,10 +6,10 @@ import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("trackvoice-all")
-  .setDescription("Starts tracking all the voice channels connections")
+  .setDescription("Track voice activity in every voice channel")
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
   .addChannelOption((option) =>
-    option.setName("channel").setDescription("Channel to log connections to").addChannelTypes(ChannelType.GuildText).setRequired(true)
+    option.setName("channel").setDescription("Text channel to post the logs in").addChannelTypes(ChannelType.GuildText).setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -34,12 +34,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
       try {
         const logChannel = (await interaction.client.channels.fetch(channel.id)) as TextChannel;
-        await logChannel.send(`This channel has been selected to track all voice channels log.`);
+        await logChannel.send(`Voice activity in every voice channel will be logged here.`);
       } catch (err) {
         printError(true, `Failed to send message to log channel ${channel.id}:`, err);
       }
 
-      await interaction.editReply(`Channel <#${channel.id}> is now being used to track all voice channels.`);
+      await interaction.editReply(`Now tracking every voice channel. Logs will go to <#${channel.id}>.`);
 
       await dzz.insert(log).values({
         action: 303,
@@ -50,7 +50,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "/trackvoiceall err: ", err);
     try {
-      await interaction.editReply(`There was an error using this function.`);
+      await interaction.editReply(`Something went wrong. Try again.`);
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }

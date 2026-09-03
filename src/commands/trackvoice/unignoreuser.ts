@@ -7,9 +7,9 @@ import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("trackvoice-unignoreuser")
-  .setDescription("Unignore user for all channels voice tracking.")
+  .setDescription("Start logging voice activity for one user again")
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
-  .addUserOption((option) => option.setName("user").setRequired(true).setDescription("User to unignore"));
+  .addUserOption((option) => option.setName("user").setRequired(true).setDescription("User to start logging again"));
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -22,16 +22,16 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       const result = await removeIgnoredUser(guildId, user.id);
 
       if (result === "no_users") {
-        await interaction.editReply("There are no users currently ignored.");
+        await interaction.editReply("No users are being ignored.");
         return;
       }
 
       if (result === "not_ignored") {
-        await interaction.editReply(`User ${user} is not being ignored.`);
+        await interaction.editReply(`${user} is not being ignored.`);
         return;
       }
 
-      await interaction.editReply(`User ${user} is not being ignored anymore.`);
+      await interaction.editReply(`No longer ignoring ${user}.`);
 
       await dzz.insert(log).values({
         action: 212,
@@ -44,7 +44,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "/trackvoice-unignoreuser err: ", err);
     try {
-      await interaction.editReply(`There was an error using this function.`);
+      await interaction.editReply(`Something went wrong. Try again.`);
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }

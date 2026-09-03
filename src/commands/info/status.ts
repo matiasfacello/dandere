@@ -5,7 +5,7 @@ import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("status")
-  .setDescription("Shows bot and database status")
+  .setDescription("Show the bot and database status")
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "/status err: ", err);
     try {
-      await interaction.editReply(`There was an error fetching status.`);
+      await interaction.editReply(`Something went wrong fetching the status. Try again.`);
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }

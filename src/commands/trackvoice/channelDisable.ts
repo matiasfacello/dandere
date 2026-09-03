@@ -7,7 +7,7 @@ import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("trackvoice-channel-disable")
-  .setDescription("Disable tracking for one voice channel.")
+  .setDescription("Stop tracking one voice channel")
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
   .addChannelOption((option) =>
     option.setName("voice-channel").setDescription("Voice channel to stop tracking").addChannelTypes(ChannelType.GuildVoice).setRequired(true)
@@ -26,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         .where(and(eq(channelTracking.guildId, guildId), eq(channelTracking.channelId, voiceChannel.id)));
 
       if (existingTrack.length === 0 || !existingTrack[0].enabled) {
-        await interaction.editReply(`Channel ${voiceChannel} is not currently tracked.`);
+        await interaction.editReply(`${voiceChannel} is not being tracked.`);
         return;
       }
 
@@ -34,7 +34,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         .update(channelTracking)
         .set({ enabled: false })
         .where(and(eq(channelTracking.guildId, guildId), eq(channelTracking.channelId, voiceChannel.id)));
-      await interaction.editReply(`Channel ${voiceChannel} is no longer being tracked.`);
+      await interaction.editReply(`Stopped tracking ${voiceChannel}.`);
 
       await dzz.insert(log).values({
         action: 302,
@@ -47,7 +47,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "/trackvoice-channel-disable err: ", err);
     try {
-      await interaction.editReply("There was an error using this function.");
+      await interaction.editReply("Something went wrong. Try again.");
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }

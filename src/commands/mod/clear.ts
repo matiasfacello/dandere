@@ -6,9 +6,9 @@ const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
 
 export const data = new SlashCommandBuilder()
   .setName("clear")
-  .setDescription("Deletes a specified amount of messages")
+  .setDescription("Delete a number of recent messages")
   .addIntegerOption((option) => {
-    return option.setName("amount").setDescription("The amount of messages to delete.").setRequired(true).setMinValue(1).setMaxValue(100);
+    return option.setName("amount").setDescription("How many messages to delete (1-100)").setRequired(true).setMinValue(1).setMaxValue(100);
   })
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages);
 
@@ -58,7 +58,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   } catch (err) {
     printError(true, "Clear command err: ", err);
     try {
-      await interaction.editReply({ content: `There was an error deleting the messages.` });
+      await interaction.editReply({ content: `Something went wrong deleting the messages. Try again.` });
     } catch (replyError) {
       printError(true, "Failed to send error reply to interaction:", replyError);
     }
