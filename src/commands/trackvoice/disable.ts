@@ -1,13 +1,16 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { dzz, eq } from "db/client";
-import { guild, log } from "db/schema";
+import { channelTracking, guild, log } from "db/schema";
 import { ChatInputCommandInteraction, MessageFlags, PermissionFlagsBits } from "discord.js";
 import { printError } from "helpers/functions";
 
 export const data = new SlashCommandBuilder()
   .setName("trackvoice-disable")
-  .setDescription("Disable all channels voice tracking.")
-  .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels);
+  .setDescription("Disable all-channels voice tracking. Per-channel tracking stays on unless you set everything.")
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
+  .addBooleanOption((option) =>
+    option.setName("everything").setDescription("Also switch off every individually tracked channel").setRequired(false)
+  );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -22,8 +25,18 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         return;
       }
 
+      const everything = interaction.options.getBoolean("everything") ?? false;
+
       await dzz.update(guild).set({ trackAll: false }).where(eq(guild.guildId, guildId));
-      await interaction.editReply(`Voice channels are not longer being tracked.`);
+      if (everything) {
+        await dzz.update(channelTracking).set({ enabled: false }).where(eq(channelTracking.guildId, guildId));
+      }
+
+      await interaction.editReply(
+        everything
+          ? `Voice tracking is off. Every individually tracked channel was switched off too.`
+          : `All-channels tracking is off. Individually tracked channels are still being logged — run this again with everything:True to silence them.`
+      );
 
       await dzz.insert(log).values({
         action: 304,

@@ -9,9 +9,7 @@
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
 
 
-- **Owner decision: `trackAll` precedence** — Current implementation lets `trackAll` win and ignores per-channel rows while it is on, matching the command name and avoiding surprising extra configuration effects. Confirm whether this should remain the intended behavior.
-
-- **Owner decision: disabling all tracking** — Current implementation leaves per-channel rows unchanged when `/trackvoice-disable` clears only `trackAll`, preserving configuration the user did not ask to delete. Confirm whether disabling all should instead clear those rows.
+- **Per-channel tracking is deliberately independent of `trackAll`** — `/trackvoice-disable` turns off all-channels mode only; individually tracked channels keep logging. Pass `everything:True` to switch those off too. (`trackAll` precedence is not a real choice: while it is on, everything is logged either way.)
 
 
 ## Premium Features
