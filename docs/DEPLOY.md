@@ -77,14 +77,9 @@ caprover deploy
 Builds the `Dockerfile` on the server and restarts the container. `CMD` is `pnpm run prod`
 (`tsx src/Bot.ts`, no watcher).
 
-CapRover needs a `captain-definition` file at the repo root pointing at the Dockerfile:
-
-```json
-{ "schemaVersion": 2, "dockerfilePath": "./Dockerfile" }
-```
-
-There is no `captain-definition` committed to this repo — if `caprover deploy` works today,
-it exists only on your machine untracked. Committing it would make the deploy reproducible.
+There is no `captain-definition` file, and none is needed: CapRover falls back to the
+`Dockerfile` at the repo root when one is absent. Add a `captain-definition` only if the build
+ever needs something the Dockerfile alone cannot express.
 
 ### Environment variables
 
