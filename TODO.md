@@ -9,9 +9,6 @@
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
 
 
-- **Auto-deploy commands on startup** — Instead of a manual `npm run commands` step, compare a hash of the local serialized command definitions against what Discord currently has registered and only call `PUT applicationCommands` when they differ. Discord rate-limits global command updates to 200/day per app, so change-detection is necessary before enabling this.
-
-
 - **Per-channel tracking** — The `channelTracking` table and `trackvoice-all` command suggest per-channel opt-in was planned but only `trackAll` is implemented. The per-channel enable/disable flow is incomplete.
 
 
@@ -32,6 +29,7 @@ _Batch these together and run `dzz-generate` + `dzz-migrate` once there are enou
 
 ## Completed
 
+- **Auto-deploy commands on startup** — Hashes sorted local command definitions and deploys only when they differ from the last successful deployment; `pnpm commands` remains a manual force-deploy.
 - **Removed `DeleteCommands.ts`** — `PUT applicationCommands` with a full body replaces commands atomically; delete step was redundant. Script deleted, `commands` script in `package.json` updated.
 - **Replaced `require()` with `await import()`** — all 6 command files converted to named exports (`export const data`, `export async function execute`); `commandsCreate.ts` made async; `DeployCommands.ts` loop moved inside async IIFE; `Bot.ts` startup wrapped in async IIFE to await `commandsCreate`.
 - **`/trackvoice-disable` fix** — `trackVoice.ts` now checks `getVoiceTrack.trackAll` in both `oneChannelBehavior` and `twoChannelBehavior`; disabling tracking actually stops the bot from posting.

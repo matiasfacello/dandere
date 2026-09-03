@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, REST } from "discord.js";
 import { config } from "dotenv";
 import { sql } from "./db/client";
 import { commandsCreate, commandsEvent, guildCreate, guildDelete, trackVoice } from "./events/index";
+import { deployCommandsIfChanged } from "helpers/commandDeployment";
 import { printDev, printError } from "./helpers/functions";
 import { scheduleLogCleanup } from "./helpers/logCleanup";
 
@@ -49,7 +50,13 @@ process.on("SIGINT", () => {
 });
 
 (async () => {
-  await commandsCreate(bot);
+  const commandLoadHadErrors = await commandsCreate(bot);
+  if (commandLoadHadErrors) {
+    printError(true, "Skipping command deployment because one or more command modules failed to load.");
+  } else {
+    const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN!);
+    await deployCommandsIfChanged(rest, process.env.APP_ID!, bot.commands.values());
+  }
   commandsEvent(bot);
   guildCreate(bot);
   guildDelete(bot);

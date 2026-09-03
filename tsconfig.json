@@ -19,7 +19,8 @@
     "sourceMap": false,
     "paths": {
       "db/*": ["./src/db/*"],
-      "helpers/*": ["./src/helpers/*"]
+      "helpers/*": ["./src/helpers/*"],
+      "types/*": ["./src/types/*"]
     }
   },
   "files": ["src/Bot.ts"],
