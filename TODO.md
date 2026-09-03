@@ -8,6 +8,9 @@
 - **Per-channel tracking is deliberately independent of `trackAll`** — `/trackvoice-disable` turns off all-channels mode only; individually tracked channels keep logging. Pass `everything:True` to switch those off too. (`trackAll` precedence is not a real choice: while it is on, everything is logged either way.)
 
 
+- **Drop the `esbuild` override** — `pnpm-workspace.yaml` pins `esbuild: ">=0.25.0"` only because drizzle-kit 0.31.10 still depends on the deprecated `@esbuild-kit/esm-loader`, which pinned esbuild 0.18.20 and tripped GHSA-67mh-4wv8-2f99. The bug is in `esbuild serve`, which nothing here runs, so this was alert noise rather than exposure. When drizzle-kit ships a version without `@esbuild-kit/*`, bump it, delete the `overrides` block, and check `pnpm why esbuild` no longer lists 0.18.x.
+
+
 ## Premium Features
 
 _Free tier baseline is defined in `src/helpers/logCleanup.ts`. Premium upgrades slot in by reading per-guild overrides from the DB._
