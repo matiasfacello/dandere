@@ -1,7 +1,8 @@
 import { dzz, eq } from "db/client";
-import { log, guild } from "db/schema";
+import { channelTracking, log, guild } from "db/schema";
 import { VoiceState, type TextChannel } from "discord.js";
-import { printDev, printError } from "../helpers/functions";
+import { printDev, printError } from "helpers/functions";
+import { shouldLogVoiceEvent } from "helpers/voiceTracking";
 
 export const trackVoice = (bot: ClientType) => {
   bot.on("voiceStateUpdate", async (oldState, newState) => {
@@ -39,16 +40,14 @@ async function oneChannelBehavior(
   if (!state.channel || !state.member) return;
 
   // Validate if the server is tracked
-  const [getVoiceTrack] = await dzz
-    .select()
-    .from(guild)
-    .where(eq(guild.guildId, state.guild.id));
+  const [[getVoiceTrack], trackedChannels] = await Promise.all([
+    dzz.select().from(guild).where(eq(guild.guildId, state.guild.id)),
+    dzz.select().from(channelTracking).where(eq(channelTracking.guildId, state.guild.id)),
+  ]);
 
-  if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
+  if (!shouldLogVoiceEvent(getVoiceTrack, trackedChannels, [state.channel.id], state.member.id)) return;
 
   printDev(getVoiceTrack);
-
-  if (getVoiceTrack.ignoreUsers?.includes(state.member.id)) return;
 
   const msg = `${state.channel}: ${state.member.user} ${action === 101 ? "connected" : "disconnected"}.`;
 
@@ -101,16 +100,14 @@ async function twoChannelBehavior(
     actionNumber = newState.streaming ? 104 : 105;
   }
 
-  const [getVoiceTrack] = await dzz
-    .select()
-    .from(guild)
-    .where(eq(guild.guildId, newState.guild.id));
+  const [[getVoiceTrack], trackedChannels] = await Promise.all([
+    dzz.select().from(guild).where(eq(guild.guildId, newState.guild.id)),
+    dzz.select().from(channelTracking).where(eq(channelTracking.guildId, newState.guild.id)),
+  ]);
 
-  if (!getVoiceTrack || !getVoiceTrack.trackAll) return;
+  if (!shouldLogVoiceEvent(getVoiceTrack, trackedChannels, [oldState.channel.id, newState.channel.id], newState.member.id)) return;
 
   printDev(getVoiceTrack);
-
-  if (getVoiceTrack.ignoreUsers?.includes(newState.member.id)) return;
 
   if (actionNumber === 104 || actionNumber === 105) {
     msg = `${newState.channel}: ${newState.member.user} ${actionNumber === 104 ? "started streaming" : "stopped streaming"}.`;
