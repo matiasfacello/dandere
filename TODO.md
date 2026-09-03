@@ -1,5 +1,9 @@
 # TODO
 
+> ⚠️ **UNAPPLIED MIGRATION PENDING** — `drizzle/0003_blushing_tyrannus.sql` (commit `4fb5245`)
+> makes `channelTracking` unique on `(guildId, channelId)`. Generated but **not applied**.
+> Owner must run `pnpm dzz-migrate`. Task 3 (per-channel tracking) is broken until this lands.
+
 ## Missing Features / Next Steps
 
 - **Premium subscription feature** — The `premiumPlans` and `premiumSubscription` tables exist in the schema but no commands or logic use them. Either implement the feature or remove the dead schema to avoid confusion.
