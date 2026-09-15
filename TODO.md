@@ -1,5 +1,26 @@
 # TODO
 
+<!-- headlines-stamp: 8d7c228707b0 -->
+## Headlines
+
+
+### Backlog (`TODO.md`)
+- [S] Drop the `esbuild` override in `pnpm-workspace.yaml` once drizzle-kit ships without `@esbuild-kit/*`
+- [L][you] Premium §1 — freeze the v1 product contract: retention period, one tier or many, price/duration units, provisioning path, overlap policy. Blocks everything below.
+- [L] Premium §2 — repair the data model: `planId` type mismatch, real FKs, `retentionDays` on plans, validity constraints, migration
+- [M] Premium §3 — one entitlement helper resolving guild retention at an injected timestamp
+- [M] Premium §4 — apply resolved retention in `src/helpers/logCleanup.ts`, per-guild error isolation
+- [M] Premium §5 — `/premium` status command + owner-only grant/revoke
+- [M] Premium §6 — assertion scripts for the boundary cases, then readme/CLAUDE.md update
+
+### From `codex-review.md` (2026-09-08) — all AI-ready, no product decisions needed
+
+- [S] codex 1. Check moderation permissions on the actual channel, not just guild-level — `src/commands/mod/clear.ts`. **Start here.**
+- [M] codex 2. Make `/clear` report partial deletion accurately — a mid-run failure currently claims nothing happened
+- [S] codex 3. Isolate retention cleanup failures between guilds — `src/helpers/logCleanup.ts`. Free-tier slice of Premium §4, unblocked today.
+- [S] codex 4. Add one credential-free `pnpm check` — typecheck + lint + the existing assertion scripts
+<!-- /headlines -->
+
 ## Missing Features / Next Steps
 
 - **Per-channel tracking is deliberately independent of `trackAll`** — `/trackvoice-disable` turns off all-channels mode only; individually tracked channels keep logging. Pass `everything:True` to switch those off too. (`trackAll` precedence is not a real choice: while it is on, everything is logged either way.)
