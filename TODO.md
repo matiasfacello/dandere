@@ -1,6 +1,6 @@
 # TODO
 
-<!-- headlines-stamp: 8d7c228707b0 -->
+<!-- headlines-stamp: b8652efd0999 -->
 ## Headlines
 
 
@@ -13,12 +13,12 @@
 - [M] Premium §5 — `/premium` status command + owner-only grant/revoke
 - [M] Premium §6 — assertion scripts for the boundary cases, then readme/CLAUDE.md update
 
-### From `codex-review.md` (2026-09-08) — all AI-ready, no product decisions needed
+### Background — agent work, low priority (`## Background` below)
 
-- [S] codex 1. Check moderation permissions on the actual channel, not just guild-level — `src/commands/mod/clear.ts`. **Start here.**
-- [M] codex 2. Make `/clear` report partial deletion accurately — a mid-run failure currently claims nothing happened
-- [S] codex 3. Isolate retention cleanup failures between guilds — `src/helpers/logCleanup.ts`. Free-tier slice of Premium §4, unblocked today.
-- [S] codex 4. Add one credential-free `pnpm check` — typecheck + lint + the existing assertion scripts
+- [S] B1. Check moderation permissions on the actual channel, not just guild-level — `src/commands/mod/clear.ts`. **Start here.**
+- [M] B2. Make `/clear` report partial deletion accurately — a mid-run failure currently claims nothing happened
+- [S] B3. Isolate retention cleanup failures between guilds — `src/helpers/logCleanup.ts`. Free-tier slice of Premium §4, unblocked today.
+- [S] B4. Add one credential-free `pnpm check` — typecheck + lint + the existing assertion scripts
 <!-- /headlines -->
 
 ## Missing Features / Next Steps
@@ -81,6 +81,87 @@ _Premium is guild-scoped. The only premium benefit currently identified in the p
 ### Future premium candidates (not yet approved scope)
 
 - Limits on tracked channels or ignored users, exports/search over retained logs, alternate destinations, analytics, and richer log formatting are possible entitlements, but the current codebase contains no requirement or partial implementation for them. Evaluate them separately instead of silently gating today's free behavior.
+
+## Background — agent work (low priority)
+
+From an agent source review on 2026-09-08 (claims re-checked against the code on 2026-10-05, still accurate). Nothing here needs a product decision — it's work an agent can pick up unattended when nothing else is queued. **S** = small change; **M** = one focused session.
+
+### B1. Check moderation permissions in the actual channel — S — start here
+
+**Evidence:** [src/commands/mod/clear.ts](src/commands/mod/clear.ts) checks the
+bot's guild-level `ManageMessages` permission, then casts the interaction channel
+to `TextChannel`. A guild-level check does not represent the channel overwrites
+that govern the actual deletion operation.
+
+**Agent brief:** Validate the channel's supported operations and the bot's
+effective permissions there before fetching/deleting messages. Keep the user's
+existing permission gate. Return a useful ephemeral response when the bot cannot
+read history or manage messages. Preserve the current 1–100 and old-message
+behavior.
+
+**Done when:** A runnable assertion script uses fake interactions to cover guild
+permission granted but channel permission denied, missing channel/member data,
+and a permitted request. Denied requests perform no fetch/delete. Existing
+assertion scripts, `pnpm typecheck`, and `pnpm lint` pass.
+
+### B2. Make `/clear` report partial deletion accurately — M
+
+**Evidence:** The handler counts successful deletes inside one `try`; if one
+individual deletion fails after earlier successes, the catch replaces the result
+with a generic “try again.” That loses the information needed to know how much
+of a destructive command already happened.
+
+**Agent brief:** Keep an accurate count across bulk and individual deletion
+steps. Stop on a terminal failure and report successful deletions plus the
+remaining failure without suggesting the whole request did nothing. Use existing
+logging helpers and keep replies ephemeral. Reuse B1's fakes if available.
+
+**Done when:** Assertions cover zero/one/many recent messages, mixed-age messages,
+fewer fetched than requested, and failure on the third individual delete. No
+message is retried automatically; the reported count matches completed calls.
+No real Discord messages are used.
+
+### B3. Isolate retention cleanup failures between guilds — S
+
+**Evidence:** [src/helpers/logCleanup.ts](src/helpers/logCleanup.ts) wraps the
+whole guild loop in one catch and computes a fresh cutoff for each guild. One
+failed delete prevents later guilds from being cleaned. Its comment still
+proposes `guild.logRetentionDays`, contrary to the newer entitlement plan.
+
+**Agent brief:** Capture one run timestamp, preserve the existing 30-day policy,
+and handle deletion errors per guild. Report succeeded/failed counts. Extract
+only the clock/database seam needed for assertions. Remove the obsolete guidance
+without implementing premium or modifying schema.
+
+**Done when:** Fake guild A fails but B is processed; all guilds use the same
+cutoff; logs exactly at the cutoff remain because the predicate is strictly
+older-than. A failed guild-list query performs no deletion. No live database is
+required.
+
+### B4. Give the bot one credential-free verification command — S
+
+**Evidence:** [package.json](package.json) exposes lint and typecheck, but the
+existing [CheckCommandHash.ts](src/scripts/CheckCommandHash.ts) and
+[CheckVoiceTracking.ts](src/scripts/CheckVoiceTracking.ts) must be invoked
+separately. The readme explicitly prefers runnable assertions over a test suite.
+
+**Agent brief:** Add `pnpm check` to run typecheck, lint, and the existing assertion
+scripts, plus those added by the tasks above. Keep assertion entrypoints free of
+bot startup, deployment, migration, and database-client side effects. Add a
+short contributor instruction with the exact command.
+
+**Done when:** The command works with bot/database credentials unset, exits
+nonzero for a deliberately failing temporary assertion, and leaves no scheduled
+process running. A clean run does not contact Discord or PostgreSQL.
+
+### How to hand these off
+
+Use: “Implement B1 in `TODO.md` (Background section), following `CLAUDE.md`. Complete the
+local implementation and assertion checks and report the results.”
+
+These are new maintenance proposals, not approval for premium billing,
+migrations, starting the bot, or deploying slash commands. Preserve the documented
+independence of per-channel tracking and `trackAll`.
 
 ## Completed
 
