@@ -1,6 +1,6 @@
 # TODO
 
-<!-- headlines-stamp: b8652efd0999 -->
+<!-- headlines-stamp: ca9f392dd6e5 -->
 ## Headlines
 
 
@@ -12,6 +12,7 @@
 - [M] Premium §4 — apply resolved retention in `src/helpers/logCleanup.ts`, per-guild error isolation
 - [M] Premium §5 — `/premium` status command + owner-only grant/revoke
 - [M] Premium §6 — assertion scripts for the boundary cases, then readme/CLAUDE.md update
+- [S] Move the Docker image to Node 26 LTS before Node 22's EOL (2027-04-30) — `Dockerfile`
 
 ### Background — agent work, low priority (`## Background` below)
 
@@ -20,6 +21,10 @@
 - [S] B3. Isolate retention cleanup failures between guilds — `src/helpers/logCleanup.ts`. Free-tier slice of Premium §4, unblocked today.
 - [S] B4. Add one credential-free `pnpm check` — typecheck + lint + the existing assertion scripts
 <!-- /headlines -->
+
+## Runtime
+
+- **Node 26 before 2027-04-30.** `Dockerfile` pins `node:22.23.5-alpine` (2026-11-19). Node 22 leaves security support on **2027-04-30**. Bump to the current `node:26.x.y` tag, build and run the image locally (`podman build` + `node -v`), then deploy. Until then, bump the 22.x patch on each Node security release. Why the tag is exact: an unpinned `node:22-alpine` reused a base image cached on the CapRover server and shipped Node 22.19.0 for a year (`_manager/runbook/node.md`).
 
 ## Missing Features / Next Steps
 
